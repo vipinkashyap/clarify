@@ -1,61 +1,557 @@
-/*
- * Evening 1 stub. The real typography pass (Evening 3-4) replaces this file.
- * Kept minimal on purpose so we don't pretend we've done the typography work.
- */
+/* ───────────────────────────────────────────────────────────────────────
+ *  Clarify — reader typography.
+ *
+ *  Evening 1 pass. Follows SPEC.md Typography section; the one deferred
+ *  piece is the annotation overlay + side-panel interactions (Evening 5).
+ *  KaTeX fonts still load from its CDN; swap to self-host in Evening 3.
+ * ─────────────────────────────────────────────────────────────────────── */
+
+/* ── Fonts ────────────────────────────────────────────────────────────── */
+
+@font-face {
+  font-family: "Source Serif 4";
+  src: url("/static/fonts/source-serif-4-wght.woff2") format("woff2");
+  font-weight: 200 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Source Serif 4";
+  src: url("/static/fonts/source-serif-4-wght-italic.woff2") format("woff2");
+  font-weight: 200 900;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Inter";
+  src: url("/static/fonts/inter-wght.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("/static/fonts/jetbrains-mono-400.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("/static/fonts/jetbrains-mono-400-italic.woff2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* ── Tokens ───────────────────────────────────────────────────────────── */
+
 :root {
   --bg: #fafaf7;
   --fg: #2a2a2a;
   --muted: #6a6a6a;
   --rule: #e5e2d8;
   --link: #5c4a3a;
+  --panel-bg: #f5f2ea;
+
+  --claim-empirical-accent:     #4a7a5c;
+  --claim-empirical-tint:       #edf4ef;
+  --claim-methodological-accent:#5c6a8a;
+  --claim-methodological-tint:  #eef0f5;
+  --claim-theoretical-accent:   #7a5c8a;
+  --claim-theoretical-tint:     #f2edf5;
+  --claim-background-accent:    #8a7a4a;
+  --claim-background-tint:      #f5f2e8;
+  --claim-limitation-accent:    #8a5c4a;
+  --claim-limitation-tint:      #f5ede8;
+
+  --serif: "Source Serif 4", "Source Serif Pro", Charter, "Iowan Old Style",
+           "Palatino Linotype", Georgia, serif;
+  --sans:  "Inter", -apple-system, "Segoe UI", system-ui, sans-serif;
+  --mono:  "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
 }
-html, body { margin: 0; padding: 0; background: var(--bg); color: var(--fg); }
-body { font-family: "Source Serif 4", Charter, "Iowan Old Style", "Palatino Linotype", Georgia, serif; font-size: 19px; line-height: 1.65; }
+
+/* ── Base ─────────────────────────────────────────────────────────────── */
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--serif);
+  font-size: 19px;
+  line-height: 1.65;
+  font-feature-settings: "liga" 1, "calt" 1, "dlig" 1, "onum" 1;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Header ───────────────────────────────────────────────────────────── */
+
 header {
-  position: sticky; top: 0; height: 56px; display: flex; align-items: center; gap: 1em;
-  padding: 0 1.5em; border-bottom: 1px solid var(--rule);
-  background: rgba(250, 250, 247, 0.85); backdrop-filter: blur(8px);
-  font-family: "Inter", -apple-system, "Segoe UI", system-ui, sans-serif; font-size: 14px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  padding: 0 1.5em;
+  border-bottom: 1px solid var(--rule);
+  background: rgba(250, 250, 247, 0.85);
+  backdrop-filter: saturate(1.2) blur(8px);
+  -webkit-backdrop-filter: saturate(1.2) blur(8px);
+  font-family: var(--sans);
+  font-size: 14px;
+  font-feature-settings: "tnum" 1, "lnum" 1;
 }
-header .brand { font-weight: 600; }
-header .title { color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+header .brand {
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+header .title {
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-style: italic;
+}
 header .spacer { flex: 1; }
-.toggle button {
-  font: inherit; border: 1px solid var(--rule); background: transparent; padding: 0.3em 0.8em; cursor: pointer;
+
+.toggle {
+  display: inline-flex;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--bg);
 }
-.toggle button[aria-selected="true"] { background: var(--fg); color: var(--bg); border-color: var(--fg); }
-.toggle button:first-child { border-radius: 4px 0 0 4px; }
-.toggle button:last-child { border-radius: 0 4px 4px 0; border-left: 0; }
+.toggle button {
+  font: inherit;
+  border: 0;
+  background: transparent;
+  color: var(--fg);
+  padding: 0.4em 0.9em;
+  cursor: pointer;
+  transition: background 150ms ease, color 150ms ease;
+}
+.toggle button + button { border-left: 1px solid var(--rule); }
+.toggle button[aria-selected="true"] {
+  background: var(--fg);
+  color: var(--bg);
+}
+
+/* ── Paper column ─────────────────────────────────────────────────────── */
 
 main {
-  max-width: 68ch; margin: 3em auto; padding: 0 1.5em;
+  max-width: 68ch;
+  margin: 3.5em auto 6em;
+  padding: 0 1.5em;
+  transition: transform 200ms ease-out, margin-right 200ms ease-out;
 }
-main h1 { font-size: 2.25em; font-weight: 600; line-height: 1.15; margin: 0 0 0.3em; }
-main .authors { color: var(--muted); font-style: italic; margin-bottom: 2em; }
-main .abstract { padding-inline: 2em; font-style: italic; margin: 2em 0; }
-main .abstract .label { font-variant-caps: small-caps; font-style: normal; letter-spacing: 0.04em; display: block; margin-bottom: 0.3em; color: var(--muted); }
-main h2 { font-size: 1.5em; font-weight: 600; margin-top: 2em; margin-bottom: 0.5em; }
-main h3 { font-size: 1.2em; font-weight: 600; font-style: italic; margin-top: 1.5em; margin-bottom: 0.4em; }
+main > h1 {
+  font-size: 2.25em;
+  font-weight: 600;
+  line-height: 1.15;
+  margin: 0 0 0.3em;
+  letter-spacing: -0.01em;
+  hyphens: manual;
+}
+main > .authors {
+  color: var(--muted);
+  font-style: italic;
+  font-size: 1em;
+  margin-bottom: 2em;
+}
+main > .abstract {
+  padding-inline: 2em;
+  font-style: italic;
+  margin: 2em 0 2.5em;
+}
+main > .abstract .label {
+  display: block;
+  margin-bottom: 0.3em;
+  font-variant-caps: small-caps;
+  font-feature-settings: "smcp" 1, "onum" 0, "lnum" 1;
+  font-style: normal;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  font-size: 0.95em;
+}
+
+main h2 {
+  font-size: 1.5em;
+  font-weight: 600;
+  margin: 2em 0 0.5em;
+  letter-spacing: -0.005em;
+}
+main h3 {
+  font-size: 1.2em;
+  font-weight: 600;
+  font-style: italic;
+  margin: 1.6em 0 0.4em;
+}
+main h4, main h5, main h6 {
+  font-size: 1em;
+  font-weight: 600;
+  margin: 1.4em 0 0.3em;
+}
+
 main p { margin: 0; text-indent: 1.25em; }
-main h1 + p, main h2 + p, main h3 + p, main .abstract + p, main > p:first-of-type { text-indent: 0; }
-main a { color: var(--link); text-decoration: none; border-bottom: 1px solid rgba(92, 74, 58, 0.4); }
-main a:hover { border-bottom-color: var(--link); }
+main h1 + p, main h2 + p, main h3 + p, main h4 + p,
+main .abstract + p, main > p:first-of-type,
+main section > p:first-of-type,
+main blockquote + p, main figure + p, main ul + p, main ol + p, main table + p,
+main .katex-display + p {
+  text-indent: 0;
+}
 
-.error { padding: 2em; color: var(--muted); font-family: "Inter", sans-serif; font-size: 14px; }
-.error code { background: #f0ede3; padding: 0.1em 0.3em; border-radius: 3px; }
+main a {
+  color: var(--link);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--link) 40%, transparent);
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1px;
+}
+main a:hover {
+  text-decoration-color: var(--link);
+}
 
-/* Placeholder claim styling — full design lands Evening 5. */
-.claim { padding-left: 0.5em; border-left: 2px solid transparent; }
-.claim-empirical_result      { border-color: #4a7a5c; background: rgba(74, 122, 92, 0.06); }
-.claim-methodological_claim  { border-color: #5c6a8a; background: rgba(92, 106, 138, 0.06); }
-.claim-theoretical_claim     { border-color: #7a5c8a; background: rgba(122, 92, 138, 0.06); }
-.claim-background_claim      { border-color: #8a7a4a; background: rgba(138, 122, 74, 0.06); }
-.claim-limitation            { border-color: #8a5c4a; background: rgba(138, 92, 74, 0.06); }
+main strong { font-weight: 600; }
+main em { font-style: italic; }
+
+main code, main pre {
+  font-family: var(--mono);
+  font-size: 0.88em;
+  font-feature-settings: "liga" 0, "calt" 0;
+}
+main code {
+  background: color-mix(in srgb, var(--fg) 6%, transparent);
+  padding: 0.08em 0.3em;
+  border-radius: 3px;
+}
+main pre {
+  background: color-mix(in srgb, var(--fg) 5%, transparent);
+  padding: 1em 1.2em;
+  border-radius: 4px;
+  overflow-x: auto;
+  line-height: 1.45;
+}
+main pre code { background: none; padding: 0; }
+
+main blockquote {
+  border-left: 2px solid var(--rule);
+  margin: 1em 0;
+  padding-left: 1em;
+  color: var(--muted);
+  font-style: italic;
+}
+
+/* Lists — not indented, sane spacing. */
+main ul, main ol {
+  padding-left: 1.5em;
+  margin: 0.8em 0;
+}
+main li + li { margin-top: 0.25em; }
+main li > p { text-indent: 0; }
+
+/* ── Figures ──────────────────────────────────────────────────────────── */
+
+main figure {
+  margin: 1.4em 0;
+  text-align: center;
+}
+main figure img { max-width: 100%; height: auto; }
+main figure figcaption {
+  margin-top: 0.6em;
+  font-size: 0.9em;
+  font-style: italic;
+  color: var(--muted);
+}
+
+/* ── Tables (booktabs) ────────────────────────────────────────────────── */
+
+main table {
+  border-collapse: collapse;
+  margin: 1.4em auto;
+  font-feature-settings: "tnum" 1, "lnum" 1;
+  font-size: 0.95em;
+}
+main table th, main table td {
+  padding: 0.45em 0.8em;
+  text-align: left;
+  border: 0;
+}
+main table thead tr {
+  border-top: 1.5px solid var(--fg);
+  border-bottom: 1px solid var(--fg);
+}
+main table tbody tr:last-child {
+  border-bottom: 1.5px solid var(--fg);
+}
+main table caption {
+  caption-side: top;
+  font-size: 0.9em;
+  font-style: italic;
+  color: var(--muted);
+  margin-bottom: 0.5em;
+}
+
+/* ── Math ─────────────────────────────────────────────────────────────── */
+
+.katex { font-size: 1.02em; }
+.katex-display {
+  margin: 1em 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.1em 0;
+}
+main .katex-display > .katex { text-align: center; }
+
+/* ── References (hanging indent) ──────────────────────────────────────── */
+
+main section#references, main section.references,
+main div.references, main #refs {
+  font-size: 0.95em;
+}
+main #refs div, main .references p, main section#references p {
+  text-indent: -1.5em;
+  padding-left: 1.5em;
+  margin: 0.5em 0;
+}
+
+/* ── Claim annotations (Evening 5 polish; default styles usable now) ──── */
+
+.claim {
+  padding-left: 0.5em;
+  border-left: 2px solid transparent;
+  transition: background 150ms ease;
+}
+.claim-empirical_result      { border-color: var(--claim-empirical-accent);      background: color-mix(in srgb, var(--claim-empirical-tint)      40%, transparent); }
+.claim-methodological_claim  { border-color: var(--claim-methodological-accent);  background: color-mix(in srgb, var(--claim-methodological-tint) 40%, transparent); }
+.claim-theoretical_claim     { border-color: var(--claim-theoretical-accent);    background: color-mix(in srgb, var(--claim-theoretical-tint)    40%, transparent); }
+.claim-background_claim      { border-color: var(--claim-background-accent);     background: color-mix(in srgb, var(--claim-background-tint)     40%, transparent); }
+.claim-limitation            { border-color: var(--claim-limitation-accent);     background: color-mix(in srgb, var(--claim-limitation-tint)     40%, transparent); }
+
+.claim:hover {
+  background: color-mix(in srgb, currentColor 0%, transparent);
+}
+.claim-empirical_result:hover      { background: color-mix(in srgb, var(--claim-empirical-tint)      80%, transparent); }
+.claim-methodological_claim:hover  { background: color-mix(in srgb, var(--claim-methodological-tint) 80%, transparent); }
+.claim-theoretical_claim:hover     { background: color-mix(in srgb, var(--claim-theoretical-tint)    80%, transparent); }
+.claim-background_claim:hover      { background: color-mix(in srgb, var(--claim-background-tint)     80%, transparent); }
+.claim-limitation:hover            { background: color-mix(in srgb, var(--claim-limitation-tint)     80%, transparent); }
+
+/* ── Side panel (stubbed — Evening 5 wires interactions) ──────────────── */
 
 aside#panel {
-  position: fixed; right: 0; top: 56px; bottom: 0; width: 360px;
-  background: #f5f2ea; border-left: 1px solid var(--rule);
-  padding: 1.5em; overflow-y: auto;
-  font-family: "Inter", sans-serif; font-size: 14px;
+  position: fixed;
+  right: 0;
+  top: 56px;
+  bottom: 0;
+  width: 360px;
+  background: var(--panel-bg);
+  border-left: 1px solid var(--rule);
+  padding: 1.5em;
+  overflow-y: auto;
+  font-family: var(--sans);
+  font-size: 14px;
+  transform: translateX(100%);
+  transition: transform 200ms ease-out;
 }
-aside .close { float: right; background: none; border: 0; font-size: 20px; cursor: pointer; color: var(--muted); }
+aside#panel:not([hidden]) {
+  transform: translateX(0);
+}
+aside .close {
+  float: right;
+  background: none;
+  border: 0;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--muted);
+  padding: 0.2em 0.4em;
+}
+aside .close:hover { color: var(--fg); }
+
+/* ── Errors / empty state ─────────────────────────────────────────────── */
+
+.error {
+  padding: 2em;
+  color: var(--muted);
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.6;
+  max-width: 62ch;
+  margin: 4em auto;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  background: #fff;
+}
+.error code {
+  font-family: var(--mono);
+  background: color-mix(in srgb, var(--fg) 6%, transparent);
+  padding: 0.1em 0.3em;
+  border-radius: 3px;
+  font-size: 0.95em;
+}
+
+/* ── Selection ────────────────────────────────────────────────────────── */
+
+::selection {
+  background: color-mix(in srgb, var(--link) 22%, transparent);
+}
+
+/* ── Header extras (nav links + claim-type legend) ────────────────────── */
+
+header .brand, header .back {
+  color: var(--fg);
+  text-decoration: none;
+}
+header .back {
+  color: var(--muted);
+  font-size: 0.93em;
+  margin-left: 0.6em;
+}
+header .back:hover { color: var(--fg); }
+
+.legend {
+  display: inline-flex;
+  gap: 0.9em;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--muted);
+  font-size: 0.88em;
+  font-feature-settings: "tnum" 1, "lnum" 1;
+}
+.legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  white-space: nowrap;
+}
+.legend .swatch {
+  width: 0.7em;
+  height: 0.7em;
+  border-radius: 2px;
+  display: inline-block;
+}
+.legend .swatch.claim-empirical_result      { background: var(--claim-empirical-accent); }
+.legend .swatch.claim-methodological_claim  { background: var(--claim-methodological-accent); }
+.legend .swatch.claim-theoretical_claim     { background: var(--claim-theoretical-accent); }
+.legend .swatch.claim-background_claim      { background: var(--claim-background-accent); }
+.legend .swatch.claim-limitation            { background: var(--claim-limitation-accent); }
+.legend .count { color: var(--fg); font-weight: 500; }
+
+/* ── Index page ───────────────────────────────────────────────────────── */
+
+body.index main {
+  max-width: 58ch;
+}
+body.index h1 {
+  font-size: 2.25em;
+  font-weight: 600;
+  margin: 0 0 0.1em;
+  letter-spacing: -0.01em;
+}
+body.index .lede {
+  color: var(--muted);
+  font-style: italic;
+  text-indent: 0;
+  margin: 0 0 2em;
+}
+body.index h2 {
+  font-size: 1.05em;
+  font-weight: 600;
+  font-variant-caps: small-caps;
+  font-feature-settings: "smcp" 1, "lnum" 1;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  margin: 2.5em 0 0.8em;
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 0.4em;
+}
+.go-form {
+  display: flex;
+  gap: 0.5em;
+  margin: 1em 0 0;
+}
+.go-form input {
+  flex: 1;
+  font: inherit;
+  font-family: var(--mono);
+  font-size: 0.95em;
+  padding: 0.55em 0.8em;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  background: #fff;
+  color: var(--fg);
+}
+.go-form input:focus {
+  outline: none;
+  border-color: var(--link);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--link) 15%, transparent);
+}
+.go-form button {
+  font: inherit;
+  font-family: var(--sans);
+  font-weight: 500;
+  padding: 0.55em 1.2em;
+  border: 0;
+  border-radius: 4px;
+  background: var(--fg);
+  color: var(--bg);
+  cursor: pointer;
+}
+.go-form button:hover { background: #000; }
+
+ul.papers {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+ul.papers li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1em;
+  padding: 0.7em 0;
+  border-bottom: 1px solid var(--rule);
+}
+ul.papers li:last-child { border-bottom: 0; }
+ul.papers a {
+  color: var(--fg);
+  text-decoration: none;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+ul.papers a:hover { color: var(--link); }
+ul.papers .meta {
+  color: var(--muted);
+  font-family: var(--sans);
+  font-size: 0.85em;
+  font-feature-settings: "tnum" 1, "lnum" 1;
+  white-space: nowrap;
+}
+.empty { color: var(--muted); font-style: italic; text-indent: 0; }
+.hint {
+  margin-top: 3em;
+  color: var(--muted);
+  font-family: var(--sans);
+  font-size: 0.88em;
+  line-height: 1.6;
+  text-indent: 0;
+}
+.hint code {
+  font-family: var(--mono);
+  background: color-mix(in srgb, var(--fg) 6%, transparent);
+  padding: 0.1em 0.3em;
+  border-radius: 3px;
+  font-size: 0.92em;
+}

@@ -61,8 +61,18 @@ def _sections_from_html(html: str) -> list[Section]:
             continue
         level = int(heading.name[1])
         title = heading.get_text(" ", strip=True)
-        body_html = "".join(str(c) for c in sec.children)
-        text = sec.get_text(" ", strip=True)
+        # Exclude the heading from body_html — the renderer adds its own.
+        body_html = "".join(
+            str(c) for c in sec.children if c is not heading
+        )
+        text_parts = []
+        for c in sec.children:
+            if c is heading:
+                continue
+            text_parts.append(
+                c.get_text(" ", strip=True) if isinstance(c, Tag) else str(c).strip()
+            )
+        text = " ".join(t for t in text_parts if t)
         # Avoid duplicate if a nested section was already captured above (it won't be, but guard anyway)
         fingerprint = id(sec)
         if fingerprint in seen_bodies:
