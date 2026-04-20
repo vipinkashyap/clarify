@@ -10,6 +10,7 @@ from typing import Optional
 from bs4 import BeautifulSoup, Tag
 
 from clarify.fetch import FetchedSource
+from clarify.figures import prepare_paper_figures
 from clarify.schema import Paper, Section
 
 
@@ -192,5 +193,10 @@ def _escape(s: str) -> str:
 
 def parse(src: FetchedSource) -> Paper:
     if src.source_type == "latex":
-        return parse_latex(src)
-    return parse_pdf(src)
+        paper = parse_latex(src)
+    else:
+        paper = parse_pdf(src)
+    # Copy/convert figures out of the arxiv bundle and rewrite the srcs.
+    # (For PDF-fallback parses this is a no-op — parse_pdf emits no images.)
+    paper = prepare_paper_figures(paper, src.source_dir)
+    return paper

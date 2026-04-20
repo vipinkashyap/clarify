@@ -11,10 +11,12 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
 from clarify import cache
+from clarify.cache import cache_dir
 from clarify.render import render_paper
 
 
 STATIC_DIR = Path(__file__).parent / "static"
+FIGURES_DIR = cache_dir() / "figures"
 
 app = FastAPI(title="Clarify")
 
@@ -74,6 +76,7 @@ def reader(arxiv_id: str) -> HTMLResponse:
 
 
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+app.mount("/figures", StaticFiles(directory=FIGURES_DIR), name="figures")
 
 
 def _ingest_hint(arxiv_id: str) -> str:
