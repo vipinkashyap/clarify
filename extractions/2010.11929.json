@@ -1,5 +1,27 @@
 {
   "arxiv_id": "2010.11929",
+  "figures": [
+    {
+      "image": "model_scheme.png",
+      "plain_language": "The Vision Transformer pipeline, end-to-end. Split the image into fixed-size patches; linearly embed each patch plus a learned position code; prepend a special [class] token; feed the sequence through a standard Transformer encoder (MSA → MLP → repeat); pull the final state of the [class] token into a small MLP head that predicts the image class."
+    },
+    {
+      "image": "finetune_vs_compute2.png",
+      "plain_language": "Fine-tuning accuracy (y-axis) against pre-training compute (x-axis). ViT curves sit above the ResNet curves at the same compute budget — at any given training cost, a Transformer-based model lands at higher accuracy than a same-budget CNN. The gap widens at larger scales."
+    },
+    {
+      "image": "20201002_rgb_filter_pca.png",
+      "plain_language": "The first 28 principal components of the learned patch-embedding filter. These are what ViT's very first layer is looking for inside each 16×16 patch — mostly oriented edges, colour-blob detectors, and texture templates. In other words, after learning on enough images, the Transformer rediscovers the same low-level features a CNN's first layer would learn."
+    },
+    {
+      "image": "20201002_selected_attention_examples.png",
+      "plain_language": "Representative attention maps from a trained ViT: each row is an image; the highlighted regions are the patches the model is attending to when it makes its prediction. The model routinely focuses on the semantically meaningful object (the bird, the dog, the road sign) rather than the background — strong qualitative evidence that self-attention learns to localize without being told where to look."
+    },
+    {
+      "image": "20201001_attention_distance_by_depth.png",
+      "plain_language": "Average attention distance (how far across the image each head looks) at each Transformer layer. Early layers have a mix of short-range and long-range heads — some look at nearby patches, others jump across the whole image. Deeper layers attend almost entirely globally. CNNs by design are local in early layers; ViT is free from that constraint and uses it."
+    }
+  ],
   "claims": [
     {
       "id": "intro-01",

@@ -26,8 +26,11 @@ from __future__ import annotations
 import html
 import json
 import re
+from pathlib import Path
 
-from clarify.schema import Claim, Paper
+from bs4 import BeautifulSoup, NavigableString
+
+from clarify.schema import Claim, FigureGloss, Paper
 
 
 KATEX_VERSION = "0.16.11"
@@ -197,16 +200,65 @@ def _claim_legend(claims: list[Claim]) -> str:
 # ── Sections ──────────────────────────────────────────────────────────────
 
 
+def _inject_figure_glosses(
+    section_html: str, glosses_by_basename: dict[str, FigureGloss]
+) -> str:
+    """Add a plain-language gloss inside each <figure> whose image matches."""
+    if not glosses_by_basename or "<figure" not in section_html:
+        return section_html
+
+    soup = BeautifulSoup(section_html, "html.parser")
+    touched = False
+
+    for fig in soup.find_all("figure"):
+        img = fig.find("img")
+        if not img or not img.get("src"):
+            continue
+        basename = Path(img["src"]).name
+        gloss = glosses_by_basename.get(basename)
+        if gloss is None:
+            continue
+
+        existing_class = fig.get("class") or []
+        fig["class"] = existing_class + ["has-gloss"]
+
+        plain_div = soup.new_tag("div", attrs={"class": "fig-plain"})
+        plain_div.string = gloss.plain_language
+        img.insert_after(plain_div)
+
+        figcap = fig.find("figcaption")
+        if figcap is not None:
+            cap_class = figcap.get("class") or []
+            if "fig-original" not in cap_class:
+                figcap["class"] = cap_class + ["fig-original"]
+        if gloss.caption_override:
+            override = soup.new_tag(
+                "figcaption", attrs={"class": "fig-override"}
+            )
+            override.string = gloss.caption_override
+            if figcap is not None:
+                figcap.insert_before(override)
+            else:
+                fig.append(override)
+
+        touched = True
+
+    return str(soup) if touched else section_html
+
+
 def _render_sections(paper: Paper) -> str:
     by_section: dict[str, list[Claim]] = {}
     for c in paper.claims:
         by_section.setdefault(c.section, []).append(c)
+
+    glosses_by_basename = {g.image: g for g in paper.figure_glosses}
 
     parts: list[str] = []
     for i, s in enumerate(paper.sections):
         tag = f"h{min(max(s.level + 1, 2), 4)}"
         sec_id = _section_id(s.title, i)
         body = _wrap_claims_in_section(s.html, s.text, by_section.get(s.title, []))
+        body = _inject_figure_glosses(body, glosses_by_basename)
         parts.append(
             f'<section id="{sec_id}" aria-labelledby="{sec_id}-h">'
             f'<{tag} id="{sec_id}-h">{_esc(s.title)}</{tag}>'

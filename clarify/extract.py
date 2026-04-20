@@ -24,7 +24,7 @@ from typing import Optional
 from pydantic import BaseModel, Field
 
 from clarify.cache import cache_dir, load_parsed
-from clarify.schema import ClaimType, Hedging
+from clarify.schema import ClaimType, FigureGloss, Hedging
 
 
 class DraftClaim(BaseModel):
@@ -44,6 +44,7 @@ class DraftClaim(BaseModel):
 class Draft(BaseModel):
     arxiv_id: str
     claims: list[DraftClaim]
+    figures: list[FigureGloss] = Field(default_factory=list)
 
 
 def _find_offsets(section_text: str, passage: str) -> tuple[int, int]:
@@ -133,9 +134,14 @@ def build_from_draft(draft_path: Path) -> tuple[Path, Path, list[str]]:
     claims_path = out_dir / f"{draft.arxiv_id}.json"
     plain_path = out_dir / f"{draft.arxiv_id}.plain.json"
 
+    figures_out = [f.model_dump() for f in draft.figures]
     claims_path.write_text(
         json.dumps(
-            {"arxiv_id": draft.arxiv_id, "claims": claims_out},
+            {
+                "arxiv_id": draft.arxiv_id,
+                "claims": claims_out,
+                "figures": figures_out,
+            },
             indent=2,
             ensure_ascii=False,
         )

@@ -268,7 +268,7 @@ main li > p { text-indent: 0; }
 /* ── Figures ──────────────────────────────────────────────────────────── */
 
 main figure {
-  margin: 1.4em 0;
+  margin: 2em 0;
   text-align: center;
 }
 main figure img { max-width: 100%; height: auto; }
@@ -277,7 +277,45 @@ main figure figcaption {
   font-size: 0.9em;
   font-style: italic;
   color: var(--muted);
+  max-width: 60ch;
+  margin-inline: auto;
 }
+
+/* Plain-language gloss — shown by default (Plain mode). Warm, inviting,
+   a beat more prominent than the authors' caption. */
+main figure .fig-plain {
+  display: block;
+  margin: 0.7em auto 0;
+  max-width: 60ch;
+  font-family: var(--serif);
+  font-size: 15.5px;
+  line-height: 1.55;
+  color: #3a362d;
+  text-align: left;
+  padding: 0.7em 1em;
+  background: color-mix(in srgb, var(--link) 6%, transparent);
+  border-left: 2px solid color-mix(in srgb, var(--link) 60%, transparent);
+  border-radius: 0 4px 4px 0;
+}
+
+/* Hide the authors' figcaption by default; Plain mode leads with the gloss */
+main figure.has-gloss .fig-original { display: none; }
+
+/* When Original mode is active, flip: hide the plain gloss, show the authors' caption */
+#mode-original:checked ~ main figure .fig-plain { display: none; }
+#mode-original:checked ~ main figure.has-gloss .fig-original { display: block; }
+
+/* caption_override: a plain-English replacement for the authors' caption.
+   Shown in Plain mode alongside the .fig-plain lede, hidden in Original. */
+main figure .fig-override {
+  margin-top: 0.5em;
+  font-size: 0.88em;
+  font-style: italic;
+  color: var(--muted);
+  max-width: 60ch;
+  margin-inline: auto;
+}
+#mode-original:checked ~ main figure .fig-override { display: none; }
 
 /* ── Tables (booktabs) ────────────────────────────────────────────────── */
 
@@ -310,11 +348,23 @@ main table caption {
 /* ── Math ─────────────────────────────────────────────────────────────── */
 
 .katex { font-size: 1.02em; }
-.katex-display {
-  margin: 1em 0;
+
+/* Display equations may be wider than the body's 68ch measure (matrices,
+   long aligns). Let them break out of the column up to viewport width,
+   center them, and scroll horizontally with a thin visible scrollbar
+   when they're still too wide. */
+main .katex-display {
+  margin: 1.4em -1em;            /* a bit of bleed past the column */
+  padding: 0.2em 1em;
   overflow-x: auto;
   overflow-y: hidden;
-  padding: 0.1em 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--rule) transparent;
+}
+main .katex-display::-webkit-scrollbar { height: 6px; }
+main .katex-display::-webkit-scrollbar-thumb {
+  background: var(--rule);
+  border-radius: 3px;
 }
 main .katex-display > .katex { text-align: center; }
 

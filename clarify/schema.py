@@ -38,6 +38,21 @@ class Section(BaseModel):
     html: str
 
 
+class FigureGloss(BaseModel):
+    """Plain-language explanation for a figure.
+
+    `image` is a filename basename (e.g. "model_scheme.png"); we match against
+    the basename of each <img src="..."> in the rendered paper HTML.
+    `caption_override` replaces the paper's original caption in Plain mode
+    when present; otherwise the authors' caption stays and the plain text is
+    shown as a lede above it.
+    """
+
+    image: str
+    plain_language: str
+    caption_override: Optional[str] = None
+
+
 class Paper(BaseModel):
     arxiv_id: str
     title: str
@@ -48,6 +63,7 @@ class Paper(BaseModel):
     source_type: Literal["latex", "pdf"]
     primary_category: Optional[str] = None
     categories: list[str] = []
+    figure_glosses: list[FigureGloss] = []
 
 
 class ClaimsFile(BaseModel):

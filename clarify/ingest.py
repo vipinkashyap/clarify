@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 
 from clarify.cache import get_paper, load_parsed, save_paper
-from clarify.schema import Claim, ClaimsFile, Paper
+from clarify.schema import Claim, ClaimsFile, FigureGloss, Paper
 
 
 def ingest_claims(arxiv_id: str, claims_path: Path) -> Paper:
@@ -20,8 +20,12 @@ def ingest_claims(arxiv_id: str, claims_path: Path) -> Paper:
     # Accept either {arxiv_id, claims: [...]} or a bare list of claims.
     if isinstance(data, list):
         claims_file = ClaimsFile(arxiv_id=arxiv_id, claims=data)
+        figures_raw: list[dict] = []
     else:
-        claims_file = ClaimsFile.model_validate(data)
+        claims_file = ClaimsFile.model_validate(
+            {k: v for k, v in data.items() if k in ("arxiv_id", "claims")}
+        )
+        figures_raw = data.get("figures") or []
 
     if claims_file.arxiv_id != arxiv_id:
         raise ValueError(
@@ -29,6 +33,8 @@ def ingest_claims(arxiv_id: str, claims_path: Path) -> Paper:
         )
 
     parsed.claims = claims_file.claims
+    if figures_raw:
+        parsed.figure_glosses = [FigureGloss.model_validate(f) for f in figures_raw]
     save_paper(parsed)
     return parsed
 
