@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Clarify — Reader</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="/static/reader.css" />
+  <!-- KaTeX via CDN for now; self-host in Evening 3 typography pass. -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+          onload="renderMathInElement(document.body, { throwOnError: false, delimiters: [
+            {left:'$$', right:'$$', display:true},
+            {left:'\\[', right:'\\]', display:true},
+            {left:'$', right:'$', display:false},
+            {left:'\\(', right:'\\)', display:false}
+          ]})"></script>
+</head>
+<body>
+  <header>
+    <span class="brand">Clarify</span>
+    <span class="title" id="header-title"></span>
+    <span class="spacer"></span>
+    <div class="toggle" role="tablist" aria-label="reading level">
+      <button role="tab" aria-selected="true" data-mode="original">Original</button>
+      <button role="tab" aria-selected="false" data-mode="plain">Plain</button>
+    </div>
+  </header>
+  <main id="paper">Loading…</main>
+  <aside id="panel" hidden>
+    <button class="close" aria-label="close panel">×</button>
+    <div id="panel-body"></div>
+  </aside>
+  <script src="/static/reader.js" type="module"></script>
+</body>
+</html>

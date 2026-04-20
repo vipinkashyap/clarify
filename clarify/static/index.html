@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Clarify</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; background: #fafaf7; color: #2a2a2a; margin: 0; padding: 3em; max-width: 640px; margin-inline: auto; }
+    h1 { font-weight: 600; }
+    input { font: inherit; padding: 0.5em; width: 100%; box-sizing: border-box; border: 1px solid #e5e2d8; border-radius: 4px; }
+    button { font: inherit; padding: 0.5em 1em; margin-top: 0.5em; background: #2a2a2a; color: #fafaf7; border: 0; border-radius: 4px; cursor: pointer; }
+    .papers { margin-top: 2em; border-top: 1px solid #e5e2d8; padding-top: 1em; }
+    .paper a { color: #5c4a3a; text-decoration: none; }
+    .paper a:hover { text-decoration: underline; }
+    .hint { color: #6a6a6a; font-size: 0.9em; margin-top: 2em; }
+    code { font-family: "JetBrains Mono", ui-monospace, monospace; background: #f0ede3; padding: 0.1em 0.3em; border-radius: 3px; }
+  </style>
+</head>
+<body>
+  <h1>Clarify</h1>
+  <p>Open a paper by arxiv id.</p>
+  <form id="go">
+    <input id="arxiv-id" placeholder="2301.12345" autofocus />
+    <button type="submit">Open</button>
+  </form>
+  <div class="papers" id="list">Loading…</div>
+  <p class="hint">
+    Not listed? In Claude Code, run <code>clarify fetch &lt;id&gt;</code>, extract
+    claims following <code>clarify/prompts/extract_claims.md</code>, then
+    <code>clarify ingest &lt;id&gt; &lt;path&gt;</code>.
+  </p>
+  <script>
+    document.getElementById("go").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const id = document.getElementById("arxiv-id").value.trim();
+      if (id) window.location.href = "/paper/" + encodeURIComponent(id);
+    });
+    fetch("/api/papers").then(r => r.json()).then(rows => {
+      const list = document.getElementById("list");
+      if (!rows.length) { list.textContent = "(no papers cached yet)"; return; }
+      list.innerHTML = "<h3>Cached papers</h3>" + rows.map(r =>
+        `<div class="paper"><a href="/paper/${encodeURIComponent(r.arxiv_id)}">${escapeHtml(r.title)}</a> <span style="color:#6a6a6a"> — ${r.num_claims} claims</span></div>`
+      ).join("");
+    });
+    function escapeHtml(s) { return s.replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+  </script>
+</body>
+</html>
