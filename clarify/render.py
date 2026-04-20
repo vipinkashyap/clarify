@@ -3,6 +3,14 @@
 No client-side JavaScript is needed to read the paper. KaTeX loads only to
 paint math (the one exception, per SPEC.md). The result is a single HTML
 document the browser can render with HTML + CSS alone.
+
+Claim annotations: for each claim, we locate its verbatim passage
+(section.text[char_start:char_end]) inside the section's rendered HTML and
+wrap it in a <span class="claim claim-{type}"> that carries both the
+original passage and (if available) a plain-language rewrite.
+
+The Original / Plain toggle is a pair of hidden radio inputs rendered
+above the <header>; CSS sibling selectors swap the two variants. Zero JS.
 """
 
 from __future__ import annotations
@@ -25,18 +33,112 @@ def _section_id(title: str, idx: int) -> str:
     return f"sec-{idx}-{slug}" if slug else f"sec-{idx}"
 
 
-def _render_sections(paper: Paper) -> str:
-    parts: list[str] = []
-    for i, s in enumerate(paper.sections):
-        tag = f"h{min(max(s.level + 1, 2), 4)}"  # paper h1s map to page h2s
-        sec_id = _section_id(s.title, i)
-        parts.append(
-            f'<section id="{sec_id}" aria-labelledby="{sec_id}-h">'
-            f'<{tag} id="{sec_id}-h">{_esc(s.title)}</{tag}>'
-            f"{s.html}"
-            f"</section>"
-        )
-    return "\n".join(parts)
+# ── Claim annotation ──────────────────────────────────────────────────────
+#
+# We wrap the verbatim passage in section.html with an annotation span.
+# Matching is tolerant: the passage has already been verified against
+# section.text (plain), but section.html may contain intervening inline
+# tags (e.g. pandoc's <a> wrappers around citation numbers) or minor
+# whitespace differences. We build a regex that allows any sequence of
+# whitespace and inline tags between the passage's tokens.
+
+_INTERVENING = r"(?:\s|<[^>]+>|&[a-z#0-9]+;)*"
+
+
+def _build_passage_regex(passage: str) -> re.Pattern[str]:
+    tokens = re.findall(r"\S+", passage)
+    if not tokens:
+        return re.compile(r"(?!)")
+    body = _INTERVENING.join(re.escape(t) for t in tokens)
+    return re.compile(body, re.IGNORECASE)
+
+
+def _render_claim_span(claim: Claim, matched: str) -> str:
+    cls = f"claim claim-{claim.type.value}"
+    orig = f'<span class="c-original">{matched}</span>'
+    plain = (
+        f'<span class="c-plain">{_esc(claim.plain_language)}</span>'
+        if claim.plain_language
+        else f'<span class="c-plain">{_esc(claim.statement)}</span>'
+    )
+    return (
+        f'<span class="{cls}" data-claim-id="{_esc(claim.id)}" '
+        f'title="{_esc(claim.type.value.replace("_", " "))} · {_esc(claim.hedging.value)}">'
+        f"{orig}{plain}</span>"
+    )
+
+
+_TAG_RE = re.compile(r"<(/?)(\w+)[^>]*?(/?)>")
+
+
+def _balance_slice(html_str: str, start: int, end: int) -> tuple[int, int]:
+    """Extend `end` so the slice html_str[start:end] has balanced tags.
+
+    If the match cut through an open tag (e.g. <span class="math inline">...
+    ends before </span>), extend end to include the matching close.
+    """
+    for _ in range(8):  # bounded iteration
+        stack: list[str] = []
+        for m in _TAG_RE.finditer(html_str, start, end):
+            is_close, tag, self_close = m.group(1), m.group(2), m.group(3)
+            if self_close:
+                continue
+            if is_close:
+                if stack and stack[-1] == tag:
+                    stack.pop()
+            else:
+                stack.append(tag)
+        if not stack:
+            return start, end
+        # extend end to close the last unclosed tag
+        closer = re.compile(rf"</{re.escape(stack[-1])}\s*>")
+        m = closer.search(html_str, end)
+        if not m:
+            return start, end
+        end = m.end()
+    return start, end
+
+
+def _wrap_claims_in_section(
+    section_html: str, section_text: str, claims: list[Claim]
+) -> str:
+    """Wrap each claim's passage in section_html with an annotation span.
+
+    Claims are located by (char_start, char_end) indices into section_text,
+    which gives us the verbatim passage string. We search for that string
+    (via a whitespace-and-tag-tolerant regex) in section_html and wrap the
+    first match, extending the range to respect tag balance. Overlapping
+    matches are dropped.
+    """
+    if not claims:
+        return section_html
+
+    ranked: list[tuple[int, int, Claim]] = []
+    for c in claims:
+        if not (0 <= c.char_start < c.char_end <= len(section_text)):
+            continue
+        passage = section_text[c.char_start : c.char_end]
+        m = _build_passage_regex(passage).search(section_html)
+        if m is None:
+            continue
+        start, end = _balance_slice(section_html, m.start(), m.end())
+        ranked.append((start, end, c))
+    ranked.sort(key=lambda t: t[0])
+
+    # Apply wraps right-to-left so earlier indices stay valid. Drop a later
+    # (in-document) claim if it overlaps one we've already wrapped.
+    out = section_html
+    next_start = len(out) + 1
+    for start, end, claim in reversed(ranked):
+        if end > next_start:
+            continue
+        matched = out[start:end]
+        out = out[:start] + _render_claim_span(claim, matched) + out[end:]
+        next_start = start
+    return out
+
+
+# ── Legend ────────────────────────────────────────────────────────────────
 
 
 def _claim_legend(claims: list[Claim]) -> str:
@@ -45,7 +147,6 @@ def _claim_legend(claims: list[Claim]) -> str:
         counts[c.type.value] = counts.get(c.type.value, 0) + 1
     if not counts:
         return ""
-    rows = []
     label = {
         "empirical_result": "Empirical",
         "methodological_claim": "Methodological",
@@ -53,6 +154,7 @@ def _claim_legend(claims: list[Claim]) -> str:
         "background_claim": "Background",
         "limitation": "Limitation",
     }
+    rows = []
     for key in (
         "empirical_result",
         "methodological_claim",
@@ -63,9 +165,33 @@ def _claim_legend(claims: list[Claim]) -> str:
         if key in counts:
             rows.append(
                 f'<li><span class="swatch claim-{key}"></span>'
-                f"{label[key]} <span class=\"count\">{counts[key]}</span></li>"
+                f'{label[key]} <span class="count">{counts[key]}</span></li>'
             )
     return f'<ul class="legend" aria-label="claim types">{"".join(rows)}</ul>'
+
+
+# ── Sections ──────────────────────────────────────────────────────────────
+
+
+def _render_sections(paper: Paper) -> str:
+    by_section: dict[str, list[Claim]] = {}
+    for c in paper.claims:
+        by_section.setdefault(c.section, []).append(c)
+
+    parts: list[str] = []
+    for i, s in enumerate(paper.sections):
+        tag = f"h{min(max(s.level + 1, 2), 4)}"
+        sec_id = _section_id(s.title, i)
+        body = _wrap_claims_in_section(s.html, s.text, by_section.get(s.title, []))
+        parts.append(
+            f'<section id="{sec_id}" aria-labelledby="{sec_id}-h">'
+            f'<{tag} id="{sec_id}-h">{_esc(s.title)}</{tag}>'
+            f"{body}</section>"
+        )
+    return "\n".join(parts)
+
+
+# ── Document ──────────────────────────────────────────────────────────────
 
 
 def render_paper(paper: Paper, css_href: str = "/static/reader.css") -> str:
@@ -105,12 +231,18 @@ def render_paper(paper: Paper, css_href: str = "/static/reader.css") -> str:
 <script defer src="{katex_auto}" crossorigin="anonymous" onload="{katex_bootstrap}"></script>
 </head>
 <body>
+<input type="radio" name="mode" id="mode-original" class="mode-toggle" checked>
+<input type="radio" name="mode" id="mode-plain" class="mode-toggle">
 <header>
   <a class="brand" href="/">Clarify</a>
   <span class="title">{title}</span>
   <span class="spacer"></span>
   {legend}
-  <a class="back" href="/">← All papers</a>
+  <div class="mode-switch" role="tablist" aria-label="reading level">
+    <label for="mode-original" role="tab">Original</label>
+    <label for="mode-plain" role="tab">Plain</label>
+  </div>
+  <a class="back" href="/">← All</a>
 </header>
 <main>
   <h1>{title}</h1>

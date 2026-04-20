@@ -322,27 +322,68 @@ main #refs div, main .references p, main section#references p {
   margin: 0.5em 0;
 }
 
-/* ── Claim annotations (Evening 5 polish; default styles usable now) ──── */
+/* ── Claim annotations ────────────────────────────────────────────────── */
 
 .claim {
-  padding-left: 0.5em;
-  border-left: 2px solid transparent;
-  transition: background 150ms ease;
+  /* Inline, unobtrusive but visible enough that a non-expert can see
+     'this sentence is a claim of type X' at a glance. Tints are already
+     very pale; we use them at full opacity so they actually register. */
+  display: inline;
+  padding: 0.05em 0.2em 0.05em 0.35em;
+  border-radius: 2px;
+  box-shadow: inset 2px 0 0 var(--claim-color, var(--fg));
+  background: var(--claim-tint, transparent);
+  transition: background 150ms ease, box-shadow 150ms ease;
 }
-.claim-empirical_result      { border-color: var(--claim-empirical-accent);      background: color-mix(in srgb, var(--claim-empirical-tint)      40%, transparent); }
-.claim-methodological_claim  { border-color: var(--claim-methodological-accent);  background: color-mix(in srgb, var(--claim-methodological-tint) 40%, transparent); }
-.claim-theoretical_claim     { border-color: var(--claim-theoretical-accent);    background: color-mix(in srgb, var(--claim-theoretical-tint)    40%, transparent); }
-.claim-background_claim      { border-color: var(--claim-background-accent);     background: color-mix(in srgb, var(--claim-background-tint)     40%, transparent); }
-.claim-limitation            { border-color: var(--claim-limitation-accent);     background: color-mix(in srgb, var(--claim-limitation-tint)     40%, transparent); }
+.claim-empirical_result      { --claim-color: var(--claim-empirical-accent);      --claim-tint: var(--claim-empirical-tint); }
+.claim-methodological_claim  { --claim-color: var(--claim-methodological-accent); --claim-tint: var(--claim-methodological-tint); }
+.claim-theoretical_claim     { --claim-color: var(--claim-theoretical-accent);    --claim-tint: var(--claim-theoretical-tint); }
+.claim-background_claim      { --claim-color: var(--claim-background-accent);     --claim-tint: var(--claim-background-tint); }
+.claim-limitation            { --claim-color: var(--claim-limitation-accent);     --claim-tint: var(--claim-limitation-tint); }
 
 .claim:hover {
-  background: color-mix(in srgb, currentColor 0%, transparent);
+  background: color-mix(in srgb, var(--claim-color) 18%, var(--claim-tint));
+  box-shadow: inset 3px 0 0 var(--claim-color, var(--fg));
 }
-.claim-empirical_result:hover      { background: color-mix(in srgb, var(--claim-empirical-tint)      80%, transparent); }
-.claim-methodological_claim:hover  { background: color-mix(in srgb, var(--claim-methodological-tint) 80%, transparent); }
-.claim-theoretical_claim:hover     { background: color-mix(in srgb, var(--claim-theoretical-tint)    80%, transparent); }
-.claim-background_claim:hover      { background: color-mix(in srgb, var(--claim-background-tint)     80%, transparent); }
-.claim-limitation:hover            { background: color-mix(in srgb, var(--claim-limitation-tint)     80%, transparent); }
+
+/* Plain / Original dual content — default shows original, hides plain. */
+.claim .c-plain { display: none; }
+.claim .c-original { display: inline; }
+
+/* ── Plain / Original toggle (CSS-only) ───────────────────────────────── */
+
+.mode-toggle {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.mode-switch {
+  display: inline-flex;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--bg);
+}
+.mode-switch label {
+  font: inherit;
+  padding: 0.4em 0.9em;
+  cursor: pointer;
+  user-select: none;
+  transition: background 150ms ease, color 150ms ease;
+  color: var(--fg);
+}
+.mode-switch label + label { border-left: 1px solid var(--rule); }
+
+#mode-original:checked ~ header .mode-switch label[for="mode-original"],
+#mode-plain:checked    ~ header .mode-switch label[for="mode-plain"] {
+  background: var(--fg);
+  color: var(--bg);
+}
+
+/* When plain is active, swap original → plain inside every .claim.         */
+#mode-plain:checked ~ main .claim .c-original { display: none; }
+#mode-plain:checked ~ main .claim .c-plain    { display: inline; }
 
 /* ── Side panel (stubbed — Evening 5 wires interactions) ──────────────── */
 
