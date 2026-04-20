@@ -261,6 +261,7 @@ def render_paper(paper: Paper, css_href: str = "/static/reader.css") -> str:
 <script defer src="{katex_auto}" crossorigin="anonymous" onload="{katex_bootstrap}"></script>
 <script type="application/json" id="claims-data">{claims_json}</script>
 <script defer src="/static/panel.js"></script>
+<script defer src="/static/lightbox.js"></script>
 </head>
 <body>
 <input type="radio" name="mode" id="mode-original" class="mode-toggle" checked>

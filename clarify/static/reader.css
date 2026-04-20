@@ -428,85 +428,140 @@ aside .close:hover {
   background: color-mix(in srgb, var(--fg) 6%, transparent);
 }
 
+/* Side-panel: Medium-article feel.
+   Hero (plain language) reads first in serif; verbatim claim sits below
+   as a pull-quote; deps read as a tiny reading list. Friendly labels
+   instead of academic small-caps ("The short version" / "In the paper"). */
+
 aside .panel-head {
   display: flex;
   align-items: center;
   gap: 0.7em;
-  margin: 0.1em 0 1.2em;
+  margin: 0.1em 0 1.4em;
   flex-wrap: wrap;
 }
 aside .panel-badge {
-  padding: 0.2em 0.6em;
-  border-radius: 3px;
-  font-size: 0.85em;
+  padding: 0.22em 0.7em;
+  border-radius: 999px;
+  font-size: 0.82em;
   font-weight: 500;
   background: var(--claim-tint, transparent);
   box-shadow: inset 2px 0 0 var(--claim-color, var(--fg));
+  letter-spacing: 0.005em;
 }
 aside .panel-hedge {
   color: var(--muted);
-  font-size: 0.85em;
+  font-size: 0.82em;
   font-variant-caps: small-caps;
   font-feature-settings: "smcp" 1, "lnum" 1;
   letter-spacing: 0.06em;
 }
 
-aside .panel-body section {
-  margin: 0 0 1.4em;
+aside .panel-section {
+  margin: 0 0 1.7em;
 }
-aside .panel-body h3 {
-  font-size: 0.75em;
+aside .panel-section h3 {
+  font-size: 0.72em;
   font-variant-caps: small-caps;
   font-feature-settings: "smcp" 1, "lnum" 1;
   letter-spacing: 0.1em;
   color: var(--muted);
-  margin: 0 0 0.4em;
+  margin: 0 0 0.5em;
   font-weight: 500;
 }
-aside .panel-body p {
+aside .panel-section p {
   margin: 0;
   color: var(--fg);
 }
-aside .panel-statement p {
+
+/* Hero — plain language, the first and loudest thing you read. */
+aside .panel-hero p {
   font-family: var(--serif);
-  font-size: 15px;
+  font-size: 17px;
+  line-height: 1.58;
+  font-feature-settings: "liga" 1, "calt" 1, "onum" 1;
+  color: #232321;
+}
+
+/* Quote block — verbatim, smaller, italicized, with a soft accent rule
+   in the claim's own colour so it feels "from the paper" without
+   shouting. */
+aside .panel-quote {
+  margin-bottom: 1.8em;
+}
+aside .panel-quote blockquote {
+  margin: 0;
+  padding: 0.5em 0 0.5em 1em;
+  border-left: 2px solid color-mix(in srgb, var(--claim-color) 70%, transparent);
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 14.5px;
   line-height: 1.55;
+  color: var(--muted);
 }
-aside .panel-plain p {
+
+/* Evidence — single line, quietly pointing at the paper's artefact. */
+aside .panel-evidence p {
+  font-family: var(--sans);
+  font-size: 13.5px;
+  color: var(--fg);
   background: color-mix(in srgb, var(--fg) 4%, transparent);
-  padding: 0.7em 0.9em;
+  padding: 0.4em 0.7em;
   border-radius: 4px;
+  display: inline-block;
 }
+
+/* Deps — reading list of linked plain-language blurbs. */
 aside .panel-deps ul {
   list-style: none;
   padding: 0;
   margin: 0;
 }
 aside .panel-deps li {
-  padding: 0.3em 0;
-  border-bottom: 1px solid color-mix(in srgb, var(--rule) 70%, transparent);
-  font-size: 0.9em;
+  padding: 0.5em 0;
+  border-bottom: 1px dashed color-mix(in srgb, var(--rule) 80%, transparent);
+  font-size: 13.5px;
+  line-height: 1.5;
 }
 aside .panel-deps li:last-child { border-bottom: 0; }
 aside .panel-deps .dep-link {
-  color: var(--link);
+  color: var(--fg);
   text-decoration: none;
+  display: block;
+  position: relative;
+  padding-left: 0.9em;
 }
-aside .panel-deps .dep-link:hover { text-decoration: underline; }
+aside .panel-deps .dep-link::before {
+  content: "→";
+  position: absolute;
+  left: 0;
+  color: var(--muted);
+}
+aside .panel-deps .dep-link:hover {
+  color: var(--link);
+}
+aside .panel-deps .dep-link:hover::before {
+  color: var(--link);
+}
 aside .panel-deps .dep-external {
   color: var(--muted);
   font-family: var(--mono);
   font-size: 0.85em;
 }
+
 aside .panel-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
   font-size: 0.8em;
   color: var(--muted);
-  padding-top: 0.8em;
+  padding-top: 0.9em;
   border-top: 1px solid var(--rule);
 }
+aside .panel-foot .panel-cite em { font-style: italic; color: var(--fg); }
 aside .panel-foot code {
   font-family: var(--mono);
-  font-size: 0.92em;
+  font-size: 0.9em;
 }
 
 /* ── Claim interaction: cursor, focus, active-during-panel ────────────── */
@@ -525,6 +580,69 @@ aside .panel-foot code {
 
 main { transition: margin-right 200ms ease-out; }
 body.panel-open main { margin-right: 420px; }
+
+/* ── Figure click-to-enlarge ──────────────────────────────────────────── */
+
+main figure img { cursor: zoom-in; }
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(30, 25, 15, 0.85);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3em 3em 2em;
+  cursor: zoom-out;
+}
+.lightbox[hidden] { display: none; }
+.lightbox figure {
+  margin: 0;
+  max-width: min(1200px, 92vw);
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.9em;
+}
+.lightbox img {
+  max-width: 100%;
+  max-height: 82vh;
+  object-fit: contain;
+  background: #fff;
+  border-radius: 4px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+  cursor: default;
+}
+.lightbox figcaption {
+  color: #f0ede3;
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.55;
+  font-style: italic;
+  text-align: center;
+  max-width: 68ch;
+}
+.lightbox figcaption[hidden] { display: none; }
+.lightbox-close {
+  position: fixed;
+  top: 1em;
+  right: 1.2em;
+  background: none;
+  border: 0;
+  color: #fafaf7;
+  font-size: 32px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0.2em 0.4em;
+  border-radius: 4px;
+}
+.lightbox-close:hover { background: rgba(255, 255, 255, 0.1); }
+
+body.lightbox-open { overflow: hidden; }
 
 /* ── Errors / empty state ─────────────────────────────────────────────── */
 

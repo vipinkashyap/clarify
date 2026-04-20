@@ -47,22 +47,50 @@
     if (!deps || !deps.length) return "";
     const items = deps.map((id) => {
       if (claims[id]) {
-        return `<li><a href="#claim-${encodeURIComponent(id)}" class="dep-link" data-dep="${escapeHtml(id)}">${escapeHtml(claims[id].statement.slice(0, 90))}${claims[id].statement.length > 90 ? "…" : ""}</a></li>`;
+        // Prefer the plain-language preview so the dep list reads
+        // like a little reading list, not a technical citation index.
+        const text = claims[id].plain_language || claims[id].statement;
+        const preview = text.slice(0, 110) + (text.length > 110 ? "…" : "");
+        return `<li><a href="#claim-${encodeURIComponent(id)}" class="dep-link" data-dep="${escapeHtml(id)}">${escapeHtml(preview)}</a></li>`;
       }
-      // External reference (e.g. "vaswani-2017")
       return `<li><span class="dep-external">${escapeHtml(id)}</span></li>`;
     });
-    return `<section class="panel-deps"><h3>Depends on</h3><ul>${items.join("")}</ul></section>`;
+    return `<section class="panel-section panel-deps">
+      <h3>What this builds on</h3>
+      <ul>${items.join("")}</ul>
+    </section>`;
   }
 
   function renderPanel(claim) {
     const typeLabel = TYPE_LABELS[claim.type] || claim.type;
     const hedgeLabel = HEDGE_LABELS[claim.hedging] || claim.hedging;
-    const evidence = claim.evidence
-      ? `<section class="panel-evidence"><h3>Evidence</h3><p>${escapeHtml(claim.evidence)}</p></section>`
+
+    // The plain version is the hero — it reads first, in a warmer serif,
+    // so a non-expert arriving at this claim gets the meaning immediately.
+    const hero = claim.plain_language
+      ? `<section class="panel-section panel-hero">
+           <h3>The short version</h3>
+           <p>${escapeHtml(claim.plain_language)}</p>
+         </section>`
+      : `<section class="panel-section panel-hero">
+           <h3>What the paper says</h3>
+           <p>${escapeHtml(claim.statement)}</p>
+         </section>`;
+
+    // Verbatim statement — shown only if we also have a plain version.
+    // Framed as a quote ("In the paper") so it's inviting rather than a wall.
+    const quote = claim.plain_language
+      ? `<section class="panel-section panel-quote">
+           <h3>In the paper</h3>
+           <blockquote>${escapeHtml(claim.statement)}</blockquote>
+         </section>`
       : "";
-    const plain = claim.plain_language
-      ? `<section class="panel-plain"><h3>In plain language</h3><p>${escapeHtml(claim.plain_language)}</p></section>`
+
+    const evidence = claim.evidence
+      ? `<section class="panel-section panel-evidence">
+           <h3>Where to look</h3>
+           <p>${escapeHtml(claim.evidence)}</p>
+         </section>`
       : "";
 
     body.innerHTML = `
@@ -70,14 +98,14 @@
         <span class="panel-badge claim-${escapeHtml(claim.type)}">${escapeHtml(typeLabel)}</span>
         <span class="panel-hedge">${escapeHtml(hedgeLabel)}</span>
       </div>
-      <section class="panel-statement">
-        <h3>Statement</h3>
-        <p>${escapeHtml(claim.statement)}</p>
-      </section>
+      ${hero}
+      ${quote}
       ${evidence}
       ${renderDeps(claim.dependencies)}
-      ${plain}
-      <div class="panel-foot"><code>${escapeHtml(claim.id)}</code> · in ${escapeHtml(claim.section)}</div>
+      <div class="panel-foot">
+        <span class="panel-cite">from <em>${escapeHtml(claim.section)}</em></span>
+        <code>${escapeHtml(claim.id)}</code>
+      </div>
     `;
   }
 

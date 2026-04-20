@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 import shutil
 import subprocess
 from pathlib import Path
@@ -129,49 +130,118 @@ def parse_latex(src: FetchedSource) -> Paper:
     )
 
 
+_PAGE_NOISE = re.compile(
+    r"^(arxiv:|©|doi:|\s*\d{1,3}\s*$|\s*page\s+\d+|figure\s+\d+|table\s+\d+)",
+    re.IGNORECASE,
+)
+
+
+def _dominant_font_size(doc) -> float:
+    """Return the body-text font size — the most ink-weighted size in the doc."""
+    size_chars: dict[float, int] = {}
+    for page in doc:
+        d = page.get_text("dict")
+        for block in d.get("blocks", []):
+            if block.get("type") != 0:
+                continue
+            for line in block["lines"]:
+                for span in line["spans"]:
+                    sz = round(span["size"], 1)
+                    size_chars[sz] = size_chars.get(sz, 0) + len(span["text"])
+    return max(size_chars, key=size_chars.get) if size_chars else 10.0
+
+
+def _looks_like_heading(text: str, size: float, body: float) -> bool:
+    if len(text) < 2 or len(text) > 110:
+        return False
+    if _PAGE_NOISE.match(text):
+        return False
+    if text.endswith((".", ",", ":", ";")):
+        return False
+    first = text[0]
+    if not (first.isalpha() or first.isdigit()):
+        return False
+    # Must be visibly larger than body.
+    return size >= body * 1.15
+
+
+def _heading_level(size: float, body: float) -> int:
+    if size >= body * 1.6:
+        return 1
+    if size >= body * 1.18:
+        return 2
+    return 3
+
+
 def parse_pdf(src: FetchedSource) -> Paper:
+    """Font-size-aware PDF parsing.
+
+    We estimate the body font size as the most ink-weighted size in the
+    document, then treat anything noticeably larger (≥1.15×) as a heading,
+    subject to some tells (no trailing punct, not a page-noise string,
+    reasonable length).
+
+    pymupdf's `get_text('dict')` returns blocks in reading order, so we
+    get column-aware traversal for free on two-column papers.
+    """
     assert src.pdf_path is not None
-    import pymupdf  # local import — heavy
+    import pymupdf
 
     doc = pymupdf.open(src.pdf_path)
+    body_size = _dominant_font_size(doc)
+
     sections: list[Section] = []
     current_title = "Body"
     current_level = 1
     buf: list[str] = []
+    seen_heading = False
 
     def flush() -> None:
         if not buf:
             return
         text = "\n".join(buf).strip()
         if not text:
+            buf.clear()
             return
-        html_body = "".join(f"<p>{_escape(p)}</p>" for p in text.split("\n\n") if p.strip())
+        paras = [p for p in re.split(r"\n\s*\n", text) if p.strip()]
+        html_body = "".join(f"<p>{_escape(p)}</p>" for p in paras)
         sections.append(
             Section(title=current_title, level=current_level, text=text, html=html_body)
         )
         buf.clear()
 
     for page in doc:
-        blocks = page.get_text("blocks")
-        blocks.sort(key=lambda b: (b[1], b[0]))  # top-to-bottom, left-to-right
-        for _x0, _y0, _x1, _y1, text, *_rest in blocks:
-            line = text.strip()
-            if not line:
+        d = page.get_text("dict")
+        for block in d.get("blocks", []):
+            if block.get("type") != 0:
                 continue
-            # Heuristic heading: short, no terminal period, mostly capitalized-ish.
-            if (
-                len(line) < 80
-                and "\n" not in line
-                and not line.endswith(".")
-                and sum(1 for c in line if c.isupper()) >= 2
-                and line[0].isalpha()
-            ):
-                flush()
-                current_title = line
-                current_level = 2
-                continue
-            buf.append(line)
+            for line in block["lines"]:
+                # A line may mix sizes; use the max span size as "this line's".
+                spans = [s for s in line["spans"] if s["text"].strip()]
+                if not spans:
+                    continue
+                line_text = "".join(s["text"] for s in spans).strip()
+                if not line_text:
+                    continue
+                line_size = max(round(s["size"], 1) for s in spans)
+
+                if _looks_like_heading(line_text, line_size, body_size):
+                    flush()
+                    current_title = line_text
+                    current_level = _heading_level(line_size, body_size)
+                    seen_heading = True
+                    continue
+
+                if _PAGE_NOISE.match(line_text):
+                    continue
+                buf.append(line_text)
+            # blank line between blocks helps paragraph splitting
+            if buf and buf[-1] != "":
+                buf.append("")
     flush()
+
+    # Drop a trailing empty body if we never hit a heading (rare).
+    sections = [s for s in sections if s.text]
 
     return Paper(
         arxiv_id=src.arxiv_id,

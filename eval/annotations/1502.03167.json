@@ -1,0 +1,270 @@
+{
+  "arxiv_id": "1502.03167",
+  "note": "Hand-annotated ground truth for Ioffe & Szegedy 2015 (Batch Normalization). Independent pass.",
+  "claims": [
+    {
+      "id": "gt-intro-01",
+      "statement": "SGD is effective for training deep networks but requires careful tuning of learning rate and parameter initialization.",
+      "type": "background_claim",
+      "hedging": "asserted",
+      "section": "Introduction",
+      "evidence": null,
+      "dependencies": [],
+      "char_start": 0,
+      "char_end": 0
+    },
+    {
+      "id": "gt-intro-02",
+      "statement": "Inputs to each layer are affected by parameters of all preceding layers, so small parameter changes amplify with depth.",
+      "type": "background_claim",
+      "hedging": "asserted",
+      "section": "Introduction",
+      "evidence": null,
+      "dependencies": [],
+      "char_start": 0,
+      "char_end": 0
+    },
+    {
+      "id": "gt-intro-03",
+      "statement": "A shift in the input distribution to a learning system is called covariate shift.",
+      "type": "background_claim",
+      "hedging": "asserted",
+      "section": "Introduction",
+      "evidence": null,
+      "dependencies": [],
+      "char_start": 0,
+      "char_end": 0
+    },
+    {
+      "id": "gt-intro-04",
+      "statement": "We define Internal Covariate Shift as the change in the distributions of a deep network's internal activations during training.",
+      "type": "methodological_claim",
+      "hedging": "asserted",
+      "section": "Introduction",
+      "evidence": null,
+      "dependencies": ["gt-intro-02", "gt-intro-03"],
+      "char_start": 0,
+      "char_end": 0
+    },
+    {
+      "id": "gt-intro-05",
+      "statement": "We propose Batch Normalization, which normalizes each mini-batch's activations by fixing their means and variances, and integrates normalization into the network architecture.",
+      "type": "methodological_claim",
+      "hedging": "asserted",
+      "section": "Introduction",
+      "evidence": null,
+      "dependencies": ["gt-intro-04"],
+      "char_start": 0,
+      "char_end": 0
+    },
+    {
+      "id": "gt-intro-06",
+      "statement": "Batch Normalization improves gradient flow by reducing dependence on parameter scale and initial values, enabling much higher learning rates without divergence.",
+      "type": "theoretical_claim",
+      "hedging": "asserted",
+      "section": "Introduction",
+      "evidence": null,
+      "dependencies": ["gt-intro-05"],
+      "char_start": 0,
+      "char_end": 0
+    },
+    {
+      "id": "gt-intro-07",
+      "statement": "Batch Normalization regularizes the model and reduces the need for Dropout.",
+      "type": "theoretical_claim",
+      "hedging": "asserted",
+      "section": "Introduction",
+      "evidence": null,
+      "dependencies": ["gt-intro-05"],
+      "char_start": 0,
+      "char_end": 0
+    },
+    {
+      "id": "gt-intro-08",
+      "statement": "Batch Normalization makes saturating nonlinearities trainable by preventing the network from getting stuck in saturated modes.",
+      "type": "theoretical_claim",
+      "hedging": "asserted",
+      "section": "Introduction",
+      "evidence": null,
+      "dependencies": ["gt-intro-05"],
+      "char_start": 0,
+      "char_end": 0
+    },
+    {
+      "id": "gt-intro-09",
+      "statement": "Applied to the best ImageNet classifier, Batch Normalization reaches equivalent accuracy with only 7% of the original training steps and exceeds it by a substantial margin.",
+      "type": "empirical_result",
+      "hedging": "asserted",
+      "section": "Introduction",
+      "evidence": "Section 4.2",
+      "dependencies": ["gt-intro-05"],
+      "char_start": 0,
+      "char_end": 0
+    },
+    {
+      "id": "gt-intro-10",
+      "statement": "An ensemble of BN-trained networks improves on the best previously known ImageNet classification results.",
+      "type": "empirical_result",
+      "hedging": "asserted",
+      "section": "Introduction",
+      "evidence": null,
+      "dependencies": ["gt-intro-09"],
+      "char_start": 0,
+      "char_end": 0
+    },
+    {
+      "id": "gt-mbs-01",
+      "statement": "Batch Normalization introduces two learned parameters per activation — a scale gamma and a shift beta — so the normalized activation can represent the identity.",
+      "type": "methodological_claim",
+      "hedging": "asserted",
+      "section": "Normalization via Mini-Batch Statistics",
+      "evidence": null,
+      "dependencies": ["gt-intro-05"],
+      "char_start": 0,
+      "char_end": 0
+    },
+    {
+      "id": "gt-mbs-02",
+      "statement": "During inference, the population mean and variance are used in place of mini-batch statistics, making inference deterministic.",
+      "type": "methodological_claim",
+      "hedging": "asserted",
+      "section": "Normalization via Mini-Batch Statistics",
+      "evidence": null,
+      "dependencies": ["gt-intro-05"],
+      "char_start": 0,
+      "char_end": 0
+    },
+    {
+      "id": "gt-mbs-03",
+      "statement": "For convolutional layers, Batch Normalization shares its parameters across all spatial locations of a given feature map, so that each feature map has a single gamma and beta.",
+      "type": "methodological_claim",
+      "hedging": "asserted",
+      "section": "Normalization via Mini-Batch Statistics",
+      "evidence": null,
+      "dependencies": ["gt-mbs-01"],
+      "char_start": 0,
+      "char_end": 0
+    },
+    {
+      "id": "gt-exp-01",
+      "statement": "On an MNIST test with sigmoid nonlinearities, the batch-normalized network reaches higher test accuracy and keeps its activation distributions far more stable than the baseline.",
+      "type": "empirical_result",
+      "hedging": "asserted",
+      "section": "Experiments",
+      "evidence": "Figure 1",
+      "dependencies": ["gt-intro-05"],
+      "char_start": 0,
+      "char_end": 0
+    },
+    {
+      "id": "gt-exp-02",
+      "statement": "BN-Baseline reaches Inception's maximum accuracy in less than half the training steps.",
+      "type": "empirical_result",
+      "hedging": "asserted",
+      "section": "Experiments",
+      "evidence": "Figure 2",
+      "dependencies": ["gt-intro-05"],
+      "char_start": 0,
+      "char_end": 0
+    },
+    {
+      "id": "gt-exp-03",
+      "statement": "With a 5x higher learning rate, BN-x5 reaches 72.2% accuracy in 14x fewer training steps than Inception.",
+      "type": "empirical_result",
+      "hedging": "asserted",
+      "section": "Experiments",
+      "evidence": "Figure 2",
+      "dependencies": ["gt-intro-06", "gt-exp-02"],
+      "char_start": 0,
+      "char_end": 0
+    },
+    {
+      "id": "gt-exp-04",
+      "statement": "With 30x higher learning rate, BN-x30 reaches 74.8% accuracy, 5x faster than Inception needed to reach 72.2%.",
+      "type": "empirical_result",
+      "hedging": "asserted",
+      "section": "Experiments",
+      "evidence": "Figure 2",
+      "dependencies": ["gt-intro-06"],
+      "char_start": 0,
+      "char_end": 0
+    },
+    {
+      "id": "gt-exp-05",
+      "statement": "Without BN, Inception with sigmoid never exceeds chance-level accuracy; with BN it reaches 69.8%.",
+      "type": "empirical_result",
+      "hedging": "asserted",
+      "section": "Experiments",
+      "evidence": null,
+      "dependencies": ["gt-intro-08"],
+      "char_start": 0,
+      "char_end": 0
+    },
+    {
+      "id": "gt-exp-06",
+      "statement": "A BN-Inception ensemble achieves 4.9% top-5 validation error on ImageNet, exceeding the prior best and the estimated human benchmark.",
+      "type": "empirical_result",
+      "hedging": "asserted",
+      "section": "Experiments",
+      "evidence": null,
+      "dependencies": ["gt-intro-10"],
+      "char_start": 0,
+      "char_end": 0
+    },
+    {
+      "id": "gt-exp-07",
+      "statement": "Adding BN lets us remove Dropout from BN-Inception without increasing overfitting.",
+      "type": "empirical_result",
+      "hedging": "asserted",
+      "section": "Experiments",
+      "evidence": null,
+      "dependencies": ["gt-intro-07"],
+      "char_start": 0,
+      "char_end": 0
+    },
+    {
+      "id": "gt-exp-08",
+      "statement": "Local Response Normalization is not necessary in the presence of Batch Normalization.",
+      "type": "empirical_result",
+      "hedging": "asserted",
+      "section": "Experiments",
+      "evidence": null,
+      "dependencies": ["gt-intro-05"],
+      "char_start": 0,
+      "char_end": 0
+    },
+    {
+      "id": "gt-concl-01",
+      "statement": "Batch Normalization is based on extending the notion of covariate shift to sub-networks and layers, and removing that shift from internal activations aids training.",
+      "type": "methodological_claim",
+      "hedging": "asserted",
+      "section": "Conclusion",
+      "evidence": null,
+      "dependencies": ["gt-intro-04"],
+      "char_start": 0,
+      "char_end": 0
+    },
+    {
+      "id": "gt-concl-02",
+      "statement": "Future work includes applying BN to recurrent neural networks, where internal covariate shift and vanishing/exploding gradients may be especially severe.",
+      "type": "limitation",
+      "hedging": "speculated",
+      "section": "Conclusion",
+      "evidence": null,
+      "dependencies": [],
+      "char_start": 0,
+      "char_end": 0
+    },
+    {
+      "id": "gt-concl-03",
+      "statement": "We plan to investigate whether BN helps with classical domain adaptation via recomputed population statistics on new data distributions.",
+      "type": "limitation",
+      "hedging": "speculated",
+      "section": "Conclusion",
+      "evidence": null,
+      "dependencies": [],
+      "char_start": 0,
+      "char_end": 0
+    }
+  ]
+}
