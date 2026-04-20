@@ -16,3 +16,6 @@ build/
 # Static build output — regenerated via `clarify build-static`.
 # Uncomment the line below if you deploy to GitHub Pages from /docs/:
 # !docs/index.html
+
+# Cloudflare wrangler cache (auth token, account id)
+worker/.wrangler/

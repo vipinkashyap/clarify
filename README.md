@@ -20,7 +20,7 @@ Clarify takes a single paper and does three small things:
 
 The goal is that someone who has never read a paper before can open one and feel oriented within five seconds. Not that they understand every detail — that they can tell *what's being said*.
 
-Five papers are in the gallery today — Attention Is All You Need, BERT, Vision Transformer, and Batch Normalization with full extractions; ResNet parses but its claims haven't been written yet. [See them.](https://vipinkashyap.github.io/clarify/)
+Five papers are in the gallery today — Attention Is All You Need, BERT, Vision Transformer, and Batch Normalization with full extractions; ResNet parses but its claims haven't been written yet. Below those, a "More from arxiv" section shows recent papers in the three covered categories (NLP, Vision, ML), and the search box runs **live arxiv queries** — anything 3+ characters fires a real search and turns up preview cards with **Request** buttons that open a prefilled GitHub issue. [See them.](https://vipinkashyap.github.io/clarify/)
 
 ## How extraction actually happens
 
@@ -59,37 +59,41 @@ If you want to push extraction quality, the cheapest contribution is to pick an 
 ```
 clarify/
 ├── render.py        templates: render_paper(), render_index(), card components
-├── main.py          FastAPI routes (60 lines — just routes + mounts)
+├── main.py          FastAPI routes (~70 lines — just routes + mounts)
 ├── cli/             Typer commands grouped by purpose:
 │   ├── extract.py     fetch, ingest, ingest-plain, build-claims, prompt
-│   ├── serve.py       bootstrap, build-static
+│   ├── serve.py       bootstrap, build-static, discover
 │   └── inspect.py     list, info, stats
 ├── extract.py       draft → claims+plain JSON, resolves passage offsets
 ├── parse.py         pandoc (LaTeX) or pymupdf (PDF) → Section objects
 ├── fetch.py         arxiv source acquisition (LaTeX bundle preferred)
 ├── figures.py       extracts + converts figures (PDF/EPS → PNG)
+├── discover.py      pre-fetches recent arxiv papers per category
 ├── ingest.py        merges claims + figures into the SQLite cache
 ├── cache.py         tiny SQLite wrapper
 ├── schema.py        Pydantic source of truth
 ├── build_static.py  pre-renders the whole site for any static host
 ├── prompts/         extract_claims.md — the extraction rulebook
 └── static/
-    ├── css/         base, paper, panel, chrome, gallery, responsive
-    ├── panel.js     side-panel interaction (~60 lines, the only non-KaTeX JS)
-    └── lightbox.js  figure click-to-enlarge
+    ├── css/             base, paper, panel, chrome, gallery, responsive
+    ├── panel.js         side-panel interaction
+    ├── lightbox.js      figure click-to-enlarge
+    └── arxiv-search.js  live-search client (opt-in via meta tag)
 
+worker/              Cloudflare Worker — arxiv API proxy with CORS
 extractions/         committed drafts (one JSON per paper)
 eval/                hand-annotated ground truth + run_eval.py
-docs/                extract-prompt.md, coverage.md
+docs/                extract-prompt.md, coverage.md, discover.json
 .claude/skills/      clarify-extract/SKILL.md
 .github/workflows/   pages.yml — deploy on push to main
 ```
 
-Three things I'd flag if you read the code:
+Four things I'd flag if you read the code:
 
 - **No LLM in Python.** Search for `anthropic` — you won't find it. The boundary is enforced by absence.
 - **Schema is the spine.** Every module imports from [`clarify/schema.py`](clarify/schema.py); nothing duplicates the data model.
 - **Reader and static-build share one renderer.** [`render.py`](clarify/render.py) emits the HTML for both `/paper/<id>` (FastAPI) and `dist/p/<id>.html` (static). The two outputs can't drift.
+- **Search has three tiers, degrading gracefully.** Typing in the search box filters the extracted cards locally. After a debounce, if the gallery sees `<meta name="clarify-worker">`, it also hits the Cloudflare Worker for live arxiv results. Below both, a pre-fetched Discover section shows recent papers in each category. Remove the Worker and live search silently disables; remove the Discover file and its section disappears. The base experience never breaks.
 
 ## Running it
 
@@ -113,6 +117,7 @@ A quick CLI tour:
 | `clarify fetch <id>` | fetch + parse one paper (PDF fallback if pandoc rejects the LaTeX). |
 | `clarify prompt <id>` | print a chat-ready extraction prompt for non-Claude-Code users. |
 | `clarify build-claims <id> <draft>` | resolve a draft's passages to char offsets and ingest. |
+| `clarify discover` | refresh the pre-fetched "Recent from arxiv" list (writes `docs/discover.json`). |
 | `clarify build-static <dir>` | pre-render the whole site as static HTML. |
 | `clarify stats [--markdown]` | per-paper + aggregate coverage. |
 | `clarify info <id>` / `clarify list` | inspect the cache. |
@@ -125,20 +130,22 @@ The build is fast (~1 minute) because `.cache/parsed/` and `.cache/figures/` are
 
 For any other static host, `clarify build-static dist` produces a portable directory of HTML, CSS, fonts, images, and a small amount of JS. All paths are relative.
 
-## Optional: live arxiv search
+## Live arxiv search
 
-The gallery ships with a pre-fetched "Recent from arxiv" section that refreshes on every build. For *live* search — type in the search box and see matching arxiv papers in real time — the repo includes a tiny Cloudflare Worker at [`worker/`](worker) that proxies arxiv's API and adds CORS headers. See [`worker/README.md`](worker/README.md) for the ~2-minute deploy.
+This deployment runs live search via a Cloudflare Worker at `clarify-arxiv.nowpages.workers.dev`. Type into the gallery's search box; anything 3+ characters fires a real arxiv query, results stream back as preview cards, and every one has a **Request** button that opens a prefilled GitHub issue for extraction. Cached at the Cloudflare edge for 5 minutes per query, which is why repeat searches are instant.
 
-Once deployed, set `CLARIFY_WORKER_URL` as a repository variable (**Settings → Secrets and variables → Actions → Variables**). The next deploy renders a meta tag the gallery reads, and live search lights up. Without the variable, everything still works — the gallery just falls back to the pre-fetched list.
+The Worker itself is ~60 lines in [`worker/src/index.js`](worker/src/index.js) — a pure pass-through to `export.arxiv.org/api/query` that adds the CORS header arxiv doesn't send. No backend for Clarify, but a trivial one for arxiv's CORS.
+
+**Forking?** See [`worker/README.md`](worker/README.md) for the two-minute deploy flow on your own Cloudflare account. Then set `CLARIFY_WORKER_URL` as a repository variable (**Settings → Secrets and variables → Actions → Variables**) and push. Without the variable, live search silently disables and the pre-fetched Discover section takes over — nothing breaks, the feature just goes dormant.
 
 ## Where this goes next
 
 Not done, in rough priority order:
 
-- **More papers.** Five is a proof of concept; thirty would be a small library.
-- **A catalog beyond arxiv id.** Searching by title or category works in the gallery; entry by category, recency, or curated reading list is the next step.
-- **Math glosses.** Equations render via KaTeX but aren't explained. Adding an inline plain-language summary on click would extend the same pattern claims and figures already use.
-- **Recall improvement.** Aggregate recall is 77% — the precision is excellent, but the extractor is a bit conservative. Iterating [`extract_claims.md`](clarify/prompts/extract_claims.md) to encourage slightly higher claim density should close the gap.
+- **Apply the Attention editorial template to the other four papers.** Attention Is All You Need got a full editorial pass — plain-language rewrites with narrative voice, concrete worked examples for math claims, figure glosses that walk through the diagrams. BERT, ViT, Batch Norm, and ResNet are still in the earlier, more summary-style voice. The [extraction rulebook](clarify/prompts/extract_claims.md) now documents the style for future contributors.
+- **More papers.** Five is a proof of concept; thirty would be a small library. Live search + the Request button now make this contributor-driven.
+- **Math glosses.** Equations render via KaTeX, but aren't explained with their own plain-language layer. Adding an inline plain-language summary on click would extend the same pattern claims and figures already use.
+- **Recall improvement.** Aggregate recall is 77% — precision is excellent, but the extractor is a bit conservative. Iterating [`extract_claims.md`](clarify/prompts/extract_claims.md) to encourage slightly higher claim density should close the gap.
 - **A short essay.** A "how to read a research paper with Clarify" piece would double as a landing page. Half-drafted; not yet written.
 
 If any of those interests you, the contribution paths above all work — and there's an [annotation-double-check](.github/ISSUE_TEMPLATE/annotation-pr.md) issue template specifically for the eval-quality work.

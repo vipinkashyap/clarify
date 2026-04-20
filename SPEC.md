@@ -1,5 +1,13 @@
 # Clarify — Prototype Spec
 
+> **Historical spec — kept for the design record.** The prototype has shipped
+> several things the original spec called non-goals or deferred: a hosted
+> static site at [vipinkashyap.github.io/clarify](https://vipinkashyap.github.io/clarify/),
+> mobile-responsive layout, figure extraction, a gallery of papers, live
+> arxiv search via a Cloudflare Worker, and a Claude Code skill for
+> distributed extraction. See [README.md](README.md) for what's actually
+> built; this file documents the original intent.
+
 ## What this is
 
 A single-paper claim extractor with an adaptive reading overlay. You give an arxiv ID to Claude Code, which extracts structured claims from the paper into a local cache. You then open a browser-based reading view where the paper is rendered with beautiful typography and each claim is annotated inline. A reading-level toggle lets the reader see claims in plain language or the authors' original wording.
