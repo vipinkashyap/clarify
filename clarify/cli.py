@@ -20,14 +20,34 @@ app = typer.Typer(
 def fetch(
     arxiv_id: str = typer.Argument(..., help="arxiv id, e.g. 2301.12345"),
     force: bool = typer.Option(False, "--force", help="Re-download source."),
+    pdf: bool = typer.Option(False, "--pdf", help="Force PDF extraction instead of LaTeX."),
 ) -> None:
-    """Download and parse an arxiv paper into .cache/parsed/<id>.json."""
+    """Download and parse an arxiv paper into .cache/parsed/<id>.json.
+
+    If pandoc chokes on the LaTeX source (custom macros, unsupported
+    packages), automatically falls back to PDF extraction and retries.
+    """
     typer.echo(f"Fetching {arxiv_id}…")
     src = fetch_mod.fetch_source(arxiv_id, force=force)
+    if pdf:
+        src.main_tex = None  # force PDF path
+        src.source_type = "pdf"
+        if src.pdf_path is None:
+            src.pdf_path = fetch_mod._download_pdf(arxiv_id, src.source_dir)
     typer.echo(f"  source_type: {src.source_type}")
     typer.echo(f"  title: {src.title}")
     typer.echo("Parsing…")
-    paper = parse_mod.parse(src)
+    try:
+        paper = parse_mod.parse(src)
+    except RuntimeError as e:
+        if src.source_type == "latex" and "pandoc" in str(e).lower():
+            typer.echo("  pandoc rejected the LaTeX source; falling back to PDF…")
+            src.pdf_path = fetch_mod._download_pdf(arxiv_id, src.source_dir)
+            src.main_tex = None
+            src.source_type = "pdf"
+            paper = parse_mod.parse(src)
+        else:
+            raise
     out = cache.save_parsed(paper)
     typer.echo(f"Wrote {out} — {len(paper.sections)} sections.")
 
