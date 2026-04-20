@@ -716,6 +716,105 @@ main figure img { cursor: zoom-in; }
 
 body.lightbox-open { overflow: hidden; }
 
+/* ── Responsive: tablet + phone ───────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  body { font-size: 17px; }
+
+  header {
+    padding: 0 1em;
+    gap: 0.5em;
+    font-size: 13px;
+  }
+  header .title { display: none; }
+  header .legend { display: none; }
+  header .header-go input { max-width: 10em; font-size: 12px; }
+
+  main { padding: 0 1.1em; margin: 3.5em auto 6em; }
+  main > section { margin-top: 2.4em; }
+  main > h1 { font-size: 1.9em; }
+  main h2 { font-size: 1.35em; }
+  main h3 { font-size: 1.1em; }
+  main > .abstract { padding-inline: 0; }
+
+  /* Index tweaks */
+  body.index main { padding: 0 1.2em; margin-top: 2.5em; }
+  body.index .hero { margin: 1.2em 0 2.5em; }
+  body.index .hero h1 { font-size: clamp(1.8em, 8vw, 2.6em); line-height: 1.08; }
+  body.index .hero .lede { font-size: 1em; }
+  .paper-grid { grid-template-columns: 1fr; gap: 1.2em; }
+  .search-row { gap: 0.5em; }
+
+  /* Side panel → bottom sheet on phones. Slides up instead of sliding
+     right, takes full width, and leaves room to dismiss by tapping above. */
+  aside#panel {
+    right: 0;
+    left: 0;
+    top: auto;
+    bottom: 0;
+    width: 100%;
+    max-height: 78vh;
+    border-left: 0;
+    border-top: 1px solid var(--rule);
+    border-radius: 14px 14px 0 0;
+    transform: translateY(100%);
+    padding: 1.3em 1.3em 1.5em;
+    box-shadow: 0 -8px 32px rgba(40, 35, 20, 0.12);
+  }
+  aside#panel:not([hidden]) { transform: translateY(0); }
+  /* Visual drag handle; purely decorative. */
+  aside#panel::before {
+    content: "";
+    position: absolute;
+    top: 0.55em;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2.2em;
+    height: 0.25em;
+    background: color-mix(in srgb, var(--fg) 20%, transparent);
+    border-radius: 999px;
+  }
+  aside#panel .close { top: 0.4em; right: 0.6em; font-size: 26px; padding: 0.3em 0.5em; }
+  /* No body reflow on phones — panel overlays. */
+  body.panel-open main { margin-right: auto; }
+
+  /* Tap targets: bigger labels. */
+  .mode-switch label { padding: 0.55em 1em; font-size: 14px; }
+  .claim { padding: 0.1em 0.25em 0.1em 0.4em; }
+
+  /* Figures: less side padding on the gloss. */
+  main figure .fig-plain { padding: 0.6em 0.8em; font-size: 15px; }
+
+  /* Katex display: cap width to viewport. */
+  main .katex-display { margin: 1.2em -0.6em; padding: 0.2em 0.6em; }
+}
+
+@media (max-width: 480px) {
+  body { font-size: 16px; }
+  header { height: 52px; padding: 0 0.7em; gap: 0.3em; }
+  header .brand { font-size: 13px; }
+  header .back { font-size: 0.85em; margin-left: 0.2em; }
+  .mode-switch label { padding: 0.5em 0.85em; font-size: 13px; }
+  header .header-go input { max-width: 7.5em; }
+
+  main { margin: 2.2em auto 5em; padding: 0 0.9em; }
+  main > h1 { font-size: 1.65em; }
+
+  body.index main { padding: 0 1em; }
+  body.index .hero h1 { font-size: 1.85em; }
+  .paper-card { padding: 1.1em 1.1em 1em; }
+  .paper-card .card-title { font-size: 1.1em; }
+  .search-input { font-size: 14px; padding: 0.55em 0.9em; }
+}
+
+/* Honour reduced-motion preferences — animations become instant. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 /* ── Floating table of contents ───────────────────────────────────────── */
 
 .toc {
