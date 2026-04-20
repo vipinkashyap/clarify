@@ -21,18 +21,83 @@ FIGURES_DIR = cache_dir() / "figures"
 app = FastAPI(title="Clarify")
 
 
+TYPE_LABELS = {
+    "empirical_result": "Empirical",
+    "methodological_claim": "Methodological",
+    "theoretical_claim": "Theoretical",
+    "background_claim": "Background",
+    "limitation": "Limitation",
+}
+TYPE_ORDER = list(TYPE_LABELS.keys())
+
+
+def _paper_card(paper: "cache.Paper") -> str:  # noqa: F821
+    arxiv_id = _html.escape(paper.arxiv_id)
+    title = _html.escape(paper.title)
+    authors = paper.authors or []
+    author_text = ", ".join(_html.escape(a) for a in authors[:3])
+    if len(authors) > 3:
+        author_text += f", <span class=\"et-al\">+{len(authors) - 3}</span>"
+
+    # Type-mix chip row
+    by_type: dict[str, int] = {}
+    for c in paper.claims:
+        by_type[c.type.value] = by_type.get(c.type.value, 0) + 1
+    chips = []
+    for key in TYPE_ORDER:
+        if key in by_type:
+            chips.append(
+                f'<span class="chip claim-{key}" title="{_html.escape(TYPE_LABELS[key])}">'
+                f'{by_type[key]}</span>'
+            )
+    chips_html = "".join(chips) if chips else (
+        '<span class="chip chip-empty">no claims ingested yet</span>'
+    )
+
+    # Hero excerpt — first empirical or methodological claim's plain version
+    hero = ""
+    for c in paper.claims:
+        if c.plain_language and c.type.value in ("empirical_result", "methodological_claim"):
+            hero = c.plain_language
+            break
+    if not hero:
+        for c in paper.claims:
+            if c.plain_language:
+                hero = c.plain_language
+                break
+
+    hero_html = (
+        f'<blockquote class="card-hero">{_html.escape(hero)}</blockquote>'
+        if hero
+        else ""
+    )
+
+    return f"""
+<a class="paper-card" href="/paper/{arxiv_id}">
+  <div class="card-id">{arxiv_id}</div>
+  <h2 class="card-title">{title}</h2>
+  <div class="card-authors">{author_text}</div>
+  {hero_html}
+  <div class="card-foot">
+    <div class="card-chips">{chips_html}</div>
+    <span class="card-cta">Read →</span>
+  </div>
+</a>
+""".strip()
+
+
 @app.get("/", response_class=HTMLResponse)
 def index() -> HTMLResponse:
     rows = cache.list_papers()
-    if rows:
-        items = "\n".join(
-            f'<li><a href="/paper/{_html.escape(r["arxiv_id"])}">{_html.escape(r["title"])}</a>'
-            f'<span class="meta">{r["num_claims"]} claims · {r["source_type"]}</span></li>'
-            for r in rows
-        )
-        listing = f'<ul class="papers">{items}</ul>'
+    papers = [cache.get_paper(r["arxiv_id"]) for r in rows]
+    papers = [p for p in papers if p is not None]
+    papers.sort(key=lambda p: (-len(p.claims), p.title))
+
+    if papers:
+        cards = "\n".join(_paper_card(p) for p in papers)
+        listing = f'<div class="paper-grid">{cards}</div>'
     else:
-        listing = '<p class="empty">No papers cached yet.</p>'
+        listing = '<p class="empty">No papers ingested yet.</p>'
 
     return HTMLResponse(f"""<!doctype html>
 <html lang="en"><head>
@@ -40,19 +105,27 @@ def index() -> HTMLResponse:
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="/static/reader.css">
 </head><body class="index">
-<header><span class="brand">Clarify</span><span class="spacer"></span></header>
-<main>
-  <h1>Clarify</h1>
-  <p class="lede">A reading overlay for arxiv papers.</p>
-  <form action="/go" method="get" class="go-form">
-    <input type="text" name="id" placeholder="2301.12345" aria-label="arxiv id" autofocus>
-    <button type="submit">Open</button>
+<header>
+  <span class="brand">Clarify</span>
+  <span class="title">A reading overlay for arxiv papers</span>
+  <span class="spacer"></span>
+  <form action="/go" method="get" class="header-go">
+    <input type="text" name="id" placeholder="Open by arxiv id" aria-label="arxiv id">
   </form>
-  <h2>Cached papers</h2>
+</header>
+<main>
+  <section class="hero">
+    <h1>Read papers<br><em>in plain English.</em></h1>
+    <p class="lede">Clarify is a reading overlay for arxiv papers — it surfaces the load-bearing
+      claims inline, with a plain-language rewrite for each one. Click a claim to see the evidence,
+      the hedging, and what it builds on.</p>
+  </section>
   {listing}
-  <p class="hint">Not listed? In Claude Code: <code>clarify fetch &lt;id&gt;</code>,
-  extract claims following <code>clarify/prompts/extract_claims.md</code>,
-  then <code>clarify ingest &lt;id&gt; &lt;path&gt;</code>.</p>
+  <p class="hint">
+    To add a paper: in Claude Code, run <code>clarify fetch &lt;id&gt;</code>,
+    extract claims following <code>clarify/prompts/extract_claims.md</code>,
+    then <code>clarify ingest &lt;id&gt; &lt;path&gt;</code>.
+  </p>
 </main>
 </body></html>""")
 

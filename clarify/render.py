@@ -215,6 +215,28 @@ def _render_sections(paper: Paper) -> str:
     return "\n".join(parts)
 
 
+def _render_toc(paper: Paper) -> str:
+    """Emit a simple table of contents; CSS only shows it on wide viewports."""
+    items = []
+    for i, s in enumerate(paper.sections):
+        sec_id = _section_id(s.title, i)
+        # Skip tiny anomaly sections (rare, from PDF-fallback mis-detections).
+        if len(s.text) < 120:
+            continue
+        items.append(
+            f'<li class="toc-l{min(s.level, 3)}">'
+            f'<a href="#{sec_id}">{_esc(s.title)}</a></li>'
+        )
+    if not items:
+        return ""
+    return (
+        '<nav class="toc" aria-label="sections">'
+        '<div class="toc-label">Sections</div>'
+        f'<ol>{"".join(items)}</ol>'
+        "</nav>"
+    )
+
+
 # ── Document ──────────────────────────────────────────────────────────────
 
 
@@ -264,19 +286,20 @@ def render_paper(paper: Paper, css_href: str = "/static/reader.css") -> str:
 <script defer src="/static/lightbox.js"></script>
 </head>
 <body>
-<input type="radio" name="mode" id="mode-original" class="mode-toggle" checked>
-<input type="radio" name="mode" id="mode-plain" class="mode-toggle">
+<input type="radio" name="mode" id="mode-plain" class="mode-toggle" checked>
+<input type="radio" name="mode" id="mode-original" class="mode-toggle">
 <header>
   <a class="brand" href="/">Clarify</a>
   <span class="title">{title}</span>
   <span class="spacer"></span>
   {legend}
   <div class="mode-switch" role="tablist" aria-label="reading level">
-    <label for="mode-original" role="tab">Original</label>
     <label for="mode-plain" role="tab">Plain</label>
+    <label for="mode-original" role="tab">Original</label>
   </div>
   <a class="back" href="/">← All</a>
 </header>
+{_render_toc(paper)}
 <main>
   <h1>{title}</h1>
   <div class="authors">{authors}</div>

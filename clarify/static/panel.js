@@ -103,7 +103,7 @@
       ${evidence}
       ${renderDeps(claim.dependencies)}
       <div class="panel-foot">
-        <span class="panel-cite">from <em>${escapeHtml(claim.section)}</em></span>
+        <span class="panel-cite"><span class="panel-mark">§</span> <em>${escapeHtml(claim.section)}</em></span>
         <code>${escapeHtml(claim.id)}</code>
       </div>
     `;
