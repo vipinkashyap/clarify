@@ -1,4 +1,9 @@
-.cache/
+# Ignore everything under .cache/ except the two subdirs we commit —
+# parsed papers + extracted figures, so `clarify bootstrap` (and CI)
+# can skip the arxiv round-trip. Small and deterministic.
+.cache/*
+!.cache/parsed/
+!.cache/figures/
 __pycache__/
 .venv/
 eval/generated/*.json
