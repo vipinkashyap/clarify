@@ -1,0 +1,11 @@
+name = "clarify-arxiv"
+main = "src/index.js"
+compatibility_date = "2025-09-01"
+
+# No secrets, no storage bindings — this Worker is a pure proxy.
+# If you want to restrict allowed origins, set ALLOWED_ORIGIN as a plain var:
+#   wrangler secret put ALLOWED_ORIGIN
+# and check request.headers.get('Origin') inside fetch().
+
+[observability]
+enabled = true

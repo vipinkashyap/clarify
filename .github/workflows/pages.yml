@@ -68,6 +68,10 @@ jobs:
 
 
       - name: Build static site
+        env:
+          # Optional: set this repo variable to enable live arxiv search.
+          # Without it, the gallery falls back to the pre-fetched Discover section.
+          CLARIFY_WORKER_URL: ${{ vars.CLARIFY_WORKER_URL }}
         run: uv run clarify build-static dist
 
       - uses: actions/upload-pages-artifact@v3

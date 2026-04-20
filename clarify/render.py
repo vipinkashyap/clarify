@@ -25,6 +25,7 @@ from __future__ import annotations
 
 import html
 import json
+import os
 import re
 from pathlib import Path
 
@@ -34,6 +35,26 @@ from clarify.schema import Claim, FigureGloss, Paper
 
 
 KATEX_VERSION = "0.16.11"
+
+
+def _arxiv_worker_url() -> str:
+    """Cloudflare Worker URL for live arxiv search, if configured.
+
+    Set CLARIFY_WORKER_URL in the environment (CI repo variable in prod) to
+    enable. Empty string means live search stays off — the gallery falls
+    back to the pre-fetched Discover section.
+    """
+    return os.environ.get("CLARIFY_WORKER_URL", "").strip()
+
+
+def _static_url_base(css_href: str) -> str:
+    """Derive the static-assets directory URL from the css link.
+
+    Runtime ('/static/reader.css') → '/static/'.
+    Static build ('static/reader.css') → 'static/'.
+    """
+    i = css_href.rfind("/")
+    return css_href[: i + 1] if i != -1 else ""
 
 TYPE_LABELS = {
     "empirical_result": "Empirical",
@@ -589,11 +610,19 @@ def render_index(
         else ""
     )
 
+    worker_url = _arxiv_worker_url()
+    worker_meta = (
+        f'<meta name="clarify-worker" content="{_esc(worker_url)}">'
+        if worker_url
+        else ""
+    )
+
     return f"""<!doctype html>
 <html lang="en"><head>
 <meta charset="utf-8"><title>Clarify</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="{css_href}">
+{worker_meta}
 </head><body class="index">
 <header>
   <span class="brand">Clarify</span>
@@ -626,4 +655,5 @@ def render_index(
   </p>
 </main>
 {_INDEX_SEARCH_JS}
+<script defer src="{_static_url_base(css_href)}arxiv-search.js"></script>
 </body></html>"""

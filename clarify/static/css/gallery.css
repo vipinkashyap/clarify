@@ -379,3 +379,19 @@ body.index .hero .lede {
 }
 .preview-card .card-request:hover,
 .preview-card .card-cta:hover { transform: translateX(2px); }
+
+/* Live-search section uses the same card grid; only distinction is a
+   small activity indicator to the right of the label. */
+.live-search {
+  margin-bottom: 2.4em;
+}
+.live-search .live-status {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--muted);
+  letter-spacing: 0;
+  opacity: 0.7;
+  margin-left: 0.5em;
+  font-variant-caps: normal;
+  text-transform: none;
+}

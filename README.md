@@ -125,6 +125,12 @@ The build is fast (~1 minute) because `.cache/parsed/` and `.cache/figures/` are
 
 For any other static host, `clarify build-static dist` produces a portable directory of HTML, CSS, fonts, images, and a small amount of JS. All paths are relative.
 
+## Optional: live arxiv search
+
+The gallery ships with a pre-fetched "Recent from arxiv" section that refreshes on every build. For *live* search — type in the search box and see matching arxiv papers in real time — the repo includes a tiny Cloudflare Worker at [`worker/`](worker) that proxies arxiv's API and adds CORS headers. See [`worker/README.md`](worker/README.md) for the ~2-minute deploy.
+
+Once deployed, set `CLARIFY_WORKER_URL` as a repository variable (**Settings → Secrets and variables → Actions → Variables**). The next deploy renders a meta tag the gallery reads, and live search lights up. Without the variable, everything still works — the gallery just falls back to the pre-fetched list.
+
 ## Where this goes next
 
 Not done, in rough priority order:

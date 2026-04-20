@@ -1,0 +1,13 @@
+{
+  "name": "clarify-arxiv-worker",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Cloudflare Worker: CORS-friendly proxy to the arxiv API.",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}
