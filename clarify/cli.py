@@ -72,6 +72,33 @@ def ingest(
     )
 
 
+@app.command("build-static")
+def build_static(
+    dist: Path = typer.Argument(
+        Path("dist"),
+        help="Output directory (e.g. dist/ or docs/ for GitHub Pages).",
+    ),
+) -> None:
+    """Pre-render the reader as a static site for any static host.
+
+    Writes index.html + p/<id>.html for every ingested paper, copies
+    static/ and figures/ alongside. Open dist/index.html directly, or
+    deploy the directory to GitHub Pages / Netlify / Vercel.
+    """
+    from clarify.build_static import build as _build
+
+    result = _build(dist)
+    typer.echo(
+        f"Wrote {result['pages']} paper pages + index to {result['dist']}"
+    )
+    typer.echo(
+        f"  static assets: {result['static']} files · "
+        f"figures: {result['figures']} files"
+    )
+    typer.echo("\nPreview locally:")
+    typer.echo(f"  python -m http.server --directory {result['dist']} 8001")
+
+
 @app.command()
 def bootstrap(
     force_fetch: bool = typer.Option(

@@ -850,6 +850,37 @@ body.index .hero .lede {
   -webkit-hyphens: manual;
 }
 
+.search-row {
+  display: flex;
+  align-items: baseline;
+  gap: 1em;
+  margin: 0 0 1.4em;
+}
+.search-input {
+  flex: 1;
+  max-width: 36em;
+  font: inherit;
+  font-family: var(--sans);
+  font-size: 15px;
+  padding: 0.6em 1em;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--fg);
+}
+.search-input::placeholder { color: var(--muted); }
+.search-input:focus {
+  outline: none;
+  border-color: var(--link);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--link) 14%, transparent);
+}
+.search-count {
+  font-family: var(--sans);
+  font-size: 13px;
+  color: var(--muted);
+  font-feature-settings: "tnum" 1, "lnum" 1;
+}
+
 .paper-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -875,10 +906,26 @@ body.index .hero .lede {
   border-color: color-mix(in srgb, var(--fg) 20%, var(--rule));
   box-shadow: 0 10px 30px rgba(40, 35, 20, 0.06);
 }
+.paper-card .card-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5em;
+}
 .paper-card .card-id {
   font-family: var(--mono);
   font-size: 11px;
   color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.paper-card .card-cat {
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 500;
+  padding: 0.15em 0.55em;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--link) 9%, transparent);
+  color: var(--link);
   letter-spacing: 0.02em;
 }
 .paper-card .card-title {

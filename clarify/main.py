@@ -31,7 +31,19 @@ TYPE_LABELS = {
 TYPE_ORDER = list(TYPE_LABELS.keys())
 
 
-def _paper_card(paper: "cache.Paper") -> str:  # noqa: F821
+CATEGORY_LABELS = {
+    "cs.CL": "NLP",
+    "cs.CV": "Vision",
+    "cs.LG": "ML",
+    "cs.AI": "AI",
+    "cs.NE": "Neural",
+    "stat.ML": "ML",
+    "cs.RO": "Robotics",
+    "cs.IR": "IR",
+}
+
+
+def _paper_card(paper: "cache.Paper", base_path: str = "/paper/") -> str:  # noqa: F821
     arxiv_id = _html.escape(paper.arxiv_id)
     title = _html.escape(paper.title)
     authors = paper.authors or []
@@ -39,7 +51,6 @@ def _paper_card(paper: "cache.Paper") -> str:  # noqa: F821
     if len(authors) > 3:
         author_text += f", <span class=\"et-al\">+{len(authors) - 3}</span>"
 
-    # Type-mix chip row
     by_type: dict[str, int] = {}
     for c in paper.claims:
         by_type[c.type.value] = by_type.get(c.type.value, 0) + 1
@@ -51,10 +62,9 @@ def _paper_card(paper: "cache.Paper") -> str:  # noqa: F821
                 f'{by_type[key]}</span>'
             )
     chips_html = "".join(chips) if chips else (
-        '<span class="chip chip-empty">no claims ingested yet</span>'
+        '<span class="chip chip-empty">no claims yet</span>'
     )
 
-    # Hero excerpt — first empirical or methodological claim's plain version
     hero = ""
     for c in paper.claims:
         if c.plain_language and c.type.value in ("empirical_result", "methodological_claim"):
@@ -72,9 +82,33 @@ def _paper_card(paper: "cache.Paper") -> str:  # noqa: F821
         else ""
     )
 
+    # Arxiv category badge
+    cat = getattr(paper, "primary_category", None)
+    cat_label = CATEGORY_LABELS.get(cat, cat) if cat else None
+    cat_html = (
+        f'<span class="card-cat" data-cat="{_html.escape(cat or "")}">'
+        f'{_html.escape(cat_label or "")}</span>'
+        if cat_label
+        else ""
+    )
+
+    # Search haystack — lowercase string of everything we want to filter on.
+    haystack_parts = [
+        paper.arxiv_id,
+        paper.title,
+        " ".join(authors),
+        cat or "",
+        cat_label or "",
+    ]
+    haystack = " ".join(haystack_parts).lower()
+    haystack = _html.escape(haystack, quote=True)
+
     return f"""
-<a class="paper-card" href="/paper/{arxiv_id}">
-  <div class="card-id">{arxiv_id}</div>
+<a class="paper-card" href="{base_path}{arxiv_id}" data-search="{haystack}">
+  <div class="card-meta">
+    <span class="card-id">{arxiv_id}</span>
+    {cat_html}
+  </div>
   <h2 class="card-title">{title}</h2>
   <div class="card-authors">{author_text}</div>
   {hero_html}
@@ -86,32 +120,83 @@ def _paper_card(paper: "cache.Paper") -> str:  # noqa: F821
 """.strip()
 
 
-@app.get("/", response_class=HTMLResponse)
-def index() -> HTMLResponse:
-    rows = cache.list_papers()
-    papers = [cache.get_paper(r["arxiv_id"]) for r in rows]
-    papers = [p for p in papers if p is not None]
-    papers.sort(key=lambda p: (-len(p.claims), p.title))
+def render_index(
+    papers: list,
+    *,
+    css_href: str = "/static/reader.css",
+    paper_base: str = "/paper/",
+    show_header_form: bool = True,
+) -> str:
+    """Render the gallery as a standalone HTML document.
 
+    Used by both the runtime server and `clarify build-static`. `paper_base`
+    is prefixed to each paper link so the same renderer works for the
+    FastAPI route (`/paper/<id>`) and the static-site layout (`p/<id>.html`).
+    """
     if papers:
-        cards = "\n".join(_paper_card(p) for p in papers)
-        listing = f'<div class="paper-grid">{cards}</div>'
+        cards = "\n".join(_paper_card(p, base_path=paper_base) for p in papers)
+        listing = f'<div class="paper-grid" id="paper-grid">{cards}</div>'
     else:
         listing = '<p class="empty">No papers ingested yet.</p>'
 
-    return HTMLResponse(f"""<!doctype html>
+    header_form = (
+        '<form action="/go" method="get" class="header-go">'
+        '<input type="text" name="id" placeholder="Open by arxiv id" aria-label="arxiv id">'
+        "</form>"
+        if show_header_form
+        else ""
+    )
+
+    search_block = (
+        '<div class="search-row">'
+        '<input type="search" id="search" class="search-input" '
+        'placeholder="Search titles, authors, categories…" autocomplete="off" '
+        'aria-label="filter papers">'
+        '<div class="search-count" id="search-count" aria-live="polite"></div>'
+        "</div>"
+        if papers
+        else ""
+    )
+
+    search_js = """
+<script>
+(() => {
+  const input = document.getElementById('search');
+  const grid = document.getElementById('paper-grid');
+  const count = document.getElementById('search-count');
+  if (!input || !grid) return;
+  const cards = [...grid.querySelectorAll('.paper-card')];
+  const total = cards.length;
+  const updateCount = (n) => {
+    if (!count) return;
+    count.textContent = n === total ? '' : `${n} of ${total}`;
+  };
+  input.addEventListener('input', () => {
+    const q = input.value.trim().toLowerCase();
+    let visible = 0;
+    for (const c of cards) {
+      const hay = c.dataset.search || '';
+      const match = !q || hay.includes(q);
+      c.style.display = match ? '' : 'none';
+      if (match) visible++;
+    }
+    updateCount(visible);
+  });
+})();
+</script>
+""".strip()
+
+    return f"""<!doctype html>
 <html lang="en"><head>
 <meta charset="utf-8"><title>Clarify</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="/static/reader.css">
+<link rel="stylesheet" href="{css_href}">
 </head><body class="index">
 <header>
   <span class="brand">Clarify</span>
   <span class="title">A reading overlay for arxiv papers</span>
   <span class="spacer"></span>
-  <form action="/go" method="get" class="header-go">
-    <input type="text" name="id" placeholder="Open by arxiv id" aria-label="arxiv id">
-  </form>
+  {header_form}
 </header>
 <main>
   <section class="hero">
@@ -120,14 +205,25 @@ def index() -> HTMLResponse:
       claims inline, with a plain-language rewrite for each one. Click a claim to see the evidence,
       the hedging, and what it builds on.</p>
   </section>
+  {search_block}
   {listing}
   <p class="hint">
-    To add a paper: in Claude Code, run <code>clarify fetch &lt;id&gt;</code>,
-    extract claims following <code>clarify/prompts/extract_claims.md</code>,
-    then <code>clarify ingest &lt;id&gt; &lt;path&gt;</code>.
+    Add a paper: in Claude Code, say <em>"extract claims from &lt;arxiv id&gt;"</em>,
+    or without Claude Code follow
+    <a href="https://github.com">docs/extract-prompt.md</a>.
   </p>
 </main>
-</body></html>""")
+{search_js}
+</body></html>"""
+
+
+@app.get("/", response_class=HTMLResponse)
+def index() -> HTMLResponse:
+    rows = cache.list_papers()
+    papers = [cache.get_paper(r["arxiv_id"]) for r in rows]
+    papers = [p for p in papers if p is not None]
+    papers.sort(key=lambda p: (-len(p.claims), p.title))
+    return HTMLResponse(render_index(papers))
 
 
 @app.get("/go")

@@ -127,6 +127,8 @@ def parse_latex(src: FetchedSource) -> Paper:
         abstract=abstract_from_html or src.abstract,
         sections=sections,
         source_type="latex",
+        primary_category=src.primary_category,
+        categories=src.categories,
     )
 
 
@@ -250,6 +252,8 @@ def parse_pdf(src: FetchedSource) -> Paper:
         abstract=src.abstract,
         sections=sections,
         source_type="pdf",
+        primary_category=src.primary_category,
+        categories=src.categories,
     )
 
 

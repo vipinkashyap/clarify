@@ -46,6 +46,8 @@ class Paper(BaseModel):
     sections: list[Section]
     claims: list[Claim] = []
     source_type: Literal["latex", "pdf"]
+    primary_category: Optional[str] = None
+    categories: list[str] = []
 
 
 class ClaimsFile(BaseModel):

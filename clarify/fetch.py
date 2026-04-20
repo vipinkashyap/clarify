@@ -30,6 +30,12 @@ class FetchedSource:
     source_type: Literal["latex", "pdf"]
     main_tex: Optional[Path] = None
     pdf_path: Optional[Path] = None
+    primary_category: Optional[str] = None
+    categories: list[str] = None  # type: ignore[assignment]
+
+    def __post_init__(self) -> None:
+        if self.categories is None:
+            self.categories = []
 
 
 def _normalize_id(arxiv_id: str) -> str:
@@ -160,4 +166,6 @@ def fetch_source(arxiv_id: str, force: bool = False) -> FetchedSource:
         source_type=source_type,
         main_tex=main_tex,
         pdf_path=pdf_path,
+        primary_category=getattr(meta, "primary_category", None),
+        categories=list(getattr(meta, "categories", []) or []),
     )

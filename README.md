@@ -54,6 +54,43 @@ Open a [paper-request issue](../../issues/new?template=request-paper.md) — som
 - **Extraction quality** — hand-annotate a paper in `eval/annotations/<arxiv_id>.json` and run `python eval/run_eval.py`. Aggregate P / R numbers land in the coverage report. Currently **P 97.3% · R 77.6%** across three annotated papers.
 - **Community activity** — git log; a GitHub Action can auto-regenerate `docs/coverage.md` on every merge (future).
 
+## Deploy a read-only site
+
+For non-developers who just want to read, pre-render the whole gallery and deploy anywhere:
+
+```
+uv run clarify build-static dist
+```
+
+This writes `dist/index.html`, one `dist/p/<arxiv_id>.html` per paper, plus `static/` and `figures/`. Open `dist/index.html` directly, or serve it:
+
+```
+python -m http.server --directory dist 8001
+```
+
+All paths are relative, so the same directory deploys to GitHub Pages, Netlify, Vercel, S3 — anywhere static files live. For GitHub Pages, a minimal workflow:
+
+```yaml
+# .github/workflows/pages.yml (not committed yet — enable when you're ready)
+on: { push: { branches: [main] } }
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v3
+      - run: brew install pandoc ghostscript  # or equivalent apt packages
+      - run: uv pip install -e .
+      - run: uv run clarify bootstrap
+      - run: uv run clarify build-static dist
+      - uses: actions/upload-pages-artifact@v3
+        with: { path: dist }
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps: [{ uses: actions/deploy-pages@v4 }]
+```
+
 ## Architecture
 
 No LLM is called from Python. Extraction runs in your Claude Code (or any LLM chat). The reader server only renders already-cached papers. The only runtime JS is KaTeX (math) and a small panel + lightbox. Everything else is HTML + CSS.

@@ -8,3 +8,6 @@ eval/generated/*.json
 dist/
 build/
 .DS_Store
+# Static build output — regenerated via `clarify build-static`.
+# Uncomment the line below if you deploy to GitHub Pages from /docs/:
+# !docs/index.html
