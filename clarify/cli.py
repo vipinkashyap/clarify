@@ -6,7 +6,13 @@ from pathlib import Path
 
 import typer
 
-from clarify import cache, fetch as fetch_mod, ingest as ingest_mod, parse as parse_mod
+from clarify import (
+    cache,
+    extract as extract_mod,
+    fetch as fetch_mod,
+    ingest as ingest_mod,
+    parse as parse_mod,
+)
 
 
 app = typer.Typer(
@@ -64,6 +70,47 @@ def ingest(
     typer.echo(
         f"Ingested {arxiv_id}: {len(paper.claims)} claims across {len(paper.sections)} sections."
     )
+
+
+@app.command("build-claims")
+def build_claims(
+    arxiv_id: str = typer.Argument(..., help="arxiv id, e.g. 2301.12345"),
+    draft_json: Path = typer.Argument(
+        ..., exists=True, readable=True, help="Draft JSON produced by Claude Code."
+    ),
+    auto_ingest: bool = typer.Option(
+        True,
+        "--ingest/--no-ingest",
+        help="Also ingest the produced JSON into the reading cache.",
+    ),
+) -> None:
+    """Resolve a draft's passages to char offsets and write claim + plain JSON.
+
+    The draft format matches what the `clarify-extract` Claude Code skill
+    produces: a list of claims with `passage` strings (rather than
+    char_start / char_end). This command locates each passage in the parsed
+    paper and fills in the offsets, producing the two cache files the reader
+    needs, and (by default) ingests them.
+    """
+    claims_path, plain_path, misses = extract_mod.build_from_draft(draft_json)
+    typer.echo(f"Wrote {claims_path}")
+    typer.echo(f"Wrote {plain_path}")
+    for m in misses:
+        typer.echo(f"  ! {m}")
+    if misses:
+        typer.echo(
+            f"\n{len(misses)} claim(s) skipped — check the passage strings "
+            f"match the parsed section text.",
+            err=True,
+        )
+
+    if auto_ingest:
+        paper = ingest_mod.ingest_claims(arxiv_id, claims_path)
+        typer.echo(f"Ingested {arxiv_id}: {len(paper.claims)} claims.")
+        if plain_path.exists():
+            paper = ingest_mod.ingest_plain(arxiv_id, plain_path)
+            n = sum(1 for c in paper.claims if c.plain_language)
+            typer.echo(f"Added plain-language: {n}/{len(paper.claims)}")
 
 
 @app.command("ingest-plain")
