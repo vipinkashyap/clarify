@@ -1,0 +1,258 @@
+{
+  "arxiv_id": "1502.03167",
+  "claims": [
+    {
+      "id": "intro-01",
+      "statement": "Stochastic gradient descent has proved effective for training deep networks, but requires careful tuning of the learning rate and parameter initialization.",
+      "type": "background_claim",
+      "hedging": "asserted",
+      "section": "Introduction",
+      "passage": "While stochastic gradient is simple and effective, it requires careful tuning of the model hyper-parameters, specifically the learning rate used in optimization, as well as the initial values for the model parameters",
+      "evidence": null,
+      "dependencies": [],
+      "plain_language": "SGD is the workhorse for training neural nets, but you have to tune the learning rate and initialization carefully or training breaks."
+    },
+    {
+      "id": "intro-02",
+      "statement": "The inputs to each layer are affected by the parameters of all preceding layers, so small changes amplify as the network becomes deeper.",
+      "type": "background_claim",
+      "hedging": "asserted",
+      "section": "Introduction",
+      "passage": "the inputs to each layer are affected by the parameters of all preceding layers – so that small changes to the network parameters amplify as the network becomes deeper",
+      "evidence": null,
+      "dependencies": [],
+      "plain_language": "In a deep net, tweaking one layer changes the inputs to every layer above it — and those changes compound the deeper you go."
+    },
+    {
+      "id": "intro-03",
+      "statement": "When the input distribution to a learning system changes during training, the system is said to experience covariate shift.",
+      "type": "background_claim",
+      "hedging": "asserted",
+      "section": "Introduction",
+      "passage": "When the input distribution to a learning system changes, it is said to experience covariate shift",
+      "evidence": null,
+      "dependencies": [],
+      "plain_language": "In machine learning, “covariate shift” means: the distribution of inputs you trained on is not the same as the distribution you see at test time."
+    },
+    {
+      "id": "intro-04",
+      "statement": "We call the change in the distributions of internal nodes of a deep network during training Internal Covariate Shift.",
+      "type": "methodological_claim",
+      "hedging": "asserted",
+      "section": "Introduction",
+      "passage": "We refer to the change in the distributions of internal nodes of a deep network, in the course of training, as Internal Covariate Shift",
+      "evidence": null,
+      "dependencies": [
+        "intro-02",
+        "intro-03"
+      ],
+      "plain_language": "We give this effect a name: “internal covariate shift” — the distribution of what each layer sees keeps shifting as training tweaks earlier layers."
+    },
+    {
+      "id": "intro-05",
+      "statement": "We propose Batch Normalization, a mechanism that reduces internal covariate shift by normalizing layer inputs (fixing their means and variances) over each mini-batch.",
+      "type": "methodological_claim",
+      "hedging": "asserted",
+      "section": "Introduction",
+      "passage": "We propose a new mechanism, which we call Batch Normalization , that takes a step towards reducing internal covariate shift, and in doing so dramatically accelerates the training of deep neural nets",
+      "evidence": null,
+      "dependencies": [
+        "intro-04"
+      ],
+      "plain_language": "Our fix: after each layer, normalize its outputs so they have roughly zero mean and unit variance across the mini-batch. That keeps the distribution each layer sees stable."
+    },
+    {
+      "id": "intro-06",
+      "statement": "Batch Normalization improves gradient flow by reducing the dependence of gradients on the scale of parameters or their initial values, which allows training with much higher learning rates without divergence.",
+      "type": "theoretical_claim",
+      "hedging": "asserted",
+      "section": "Introduction",
+      "passage": "Batch Normalization also has a beneficial effect on the gradient flow through the network, by reducing the dependence of gradients on the scale of the parameters or of their initial values. This allows us to use much higher learning rates without the risk of divergence",
+      "evidence": null,
+      "dependencies": [
+        "intro-05"
+      ],
+      "plain_language": "BN also makes gradients less sensitive to initialization, so you can crank up the learning rate a lot without training blowing up."
+    },
+    {
+      "id": "intro-07",
+      "statement": "Batch Normalization regularizes the model and reduces the need for Dropout.",
+      "type": "theoretical_claim",
+      "hedging": "asserted",
+      "section": "Introduction",
+      "passage": "batch normalization regularizes the model and reduces the need for Dropout",
+      "evidence": null,
+      "dependencies": [
+        "intro-05"
+      ],
+      "plain_language": "As a side effect, BN acts like a regularizer — you often don't need Dropout anymore."
+    },
+    {
+      "id": "intro-08",
+      "statement": "Batch Normalization makes it feasible to train with saturating nonlinearities by preventing the network from getting stuck in saturated modes.",
+      "type": "theoretical_claim",
+      "hedging": "asserted",
+      "section": "Introduction",
+      "passage": "Batch Normalization makes it possible to use saturating nonlinearities by preventing the network from getting stuck in the saturated modes",
+      "evidence": null,
+      "dependencies": [
+        "intro-05"
+      ],
+      "plain_language": "BN lets you train deep networks with sigmoid/tanh activations again — historically those got stuck, but normalization keeps the inputs in the active zone."
+    },
+    {
+      "id": "intro-09",
+      "statement": "Applied to the best-performing ImageNet classifier, Batch Normalization matches its accuracy using only 7% of the training steps and exceeds its accuracy by a substantial margin.",
+      "type": "empirical_result",
+      "hedging": "asserted",
+      "section": "Introduction",
+      "passage": "we apply Batch Normalization to the best-performing ImageNet classification network, and show that we can match its performance using only 7% of the training steps, and can further exceed its accuracy by a substantial margin",
+      "evidence": "Section 4.2",
+      "dependencies": [
+        "intro-05"
+      ],
+      "plain_language": "On the top ImageNet classifier of the day, BN got to the same accuracy in about 7% of the training time — then kept going and beat it by a healthy margin."
+    },
+    {
+      "id": "intro-10",
+      "statement": "An ensemble of networks trained with Batch Normalization improves upon the best known top-5 error on ImageNet classification.",
+      "type": "empirical_result",
+      "hedging": "asserted",
+      "section": "Introduction",
+      "passage": "Using an ensemble of such networks trained with Batch Normalization, we achieve the top-5 error rate that improves upon the best known results on ImageNet classification",
+      "evidence": null,
+      "dependencies": [
+        "intro-09"
+      ],
+      "plain_language": "An ensemble of BN networks sets a new best top-5 accuracy on the ImageNet leaderboard."
+    },
+    {
+      "id": "exp-01",
+      "statement": "On MNIST, the batch-normalized network reaches higher test accuracy and keeps its internal activation distributions much more stable than the unnormalized baseline.",
+      "type": "empirical_result",
+      "hedging": "asserted",
+      "section": "Experiments",
+      "passage": "The batch-normalized network enjoys the higher test accuracy",
+      "evidence": "Figure 1",
+      "dependencies": [
+        "intro-05"
+      ],
+      "plain_language": "On a tiny MNIST test, the BN network trains faster, gets higher accuracy, and the signal distributions inside the network don't drift during training."
+    },
+    {
+      "id": "exp-02",
+      "statement": "BN-Baseline matches Inception's maximum accuracy in less than half the number of training steps.",
+      "type": "empirical_result",
+      "hedging": "asserted",
+      "section": "Experiments",
+      "passage": "By only using Batch Normalization ( BN-Baseline ), we match the accuracy of Inception in less than half the number of training steps",
+      "evidence": "Figure 2",
+      "dependencies": [
+        "intro-05"
+      ],
+      "plain_language": "Just dropping BN into the Inception network halved the training time to reach its former peak accuracy."
+    },
+    {
+      "id": "exp-03",
+      "statement": "BN-x5, which raises the learning rate by 5x after adding BN, reaches Inception's 72.2% accuracy in 14 times fewer training steps.",
+      "type": "empirical_result",
+      "hedging": "asserted",
+      "section": "Experiments",
+      "passage": "BN-x5 needs 14 times fewer steps than Inception to reach the 72.2% accuracy",
+      "evidence": "Figure 2",
+      "dependencies": [
+        "intro-06",
+        "exp-02"
+      ],
+      "plain_language": "Combined with a 5x higher learning rate, BN got to Inception's accuracy level 14x faster."
+    },
+    {
+      "id": "exp-04",
+      "statement": "BN-x30 (30x higher learning rate) reaches 74.8% accuracy in about 5x fewer steps than Inception needed to reach 72.2%.",
+      "type": "empirical_result",
+      "hedging": "asserted",
+      "section": "Experiments",
+      "passage": "It reaches 74.8% after \\(6\\cdot 10^6\\) steps, i.e. 5 times fewer steps than required by Inception to reach 72.2%",
+      "evidence": "Figure 2",
+      "dependencies": [
+        "intro-06"
+      ],
+      "plain_language": "Pushing the learning rate 30x higher with BN got to a higher final accuracy (74.8%) in one fifth the training time — something impossible without BN."
+    },
+    {
+      "id": "exp-05",
+      "statement": "With sigmoid nonlinearities, the unnormalized Inception never exceeds 1/1000 accuracy, while BN-x5-Sigmoid reaches 69.8%.",
+      "type": "empirical_result",
+      "hedging": "asserted",
+      "section": "Experiments",
+      "passage": "Without Batch Normalization, Inception with sigmoid never achieves better than \\(1/1000\\) accuracy",
+      "evidence": null,
+      "dependencies": [
+        "intro-08"
+      ],
+      "plain_language": "Sigmoid activations fail completely on Inception without BN — literally random-chance accuracy. Add BN and the same architecture gets to 69.8%."
+    },
+    {
+      "id": "exp-06",
+      "statement": "An ensemble of BN-Inception networks reaches 4.9% top-5 validation error on ImageNet, beating the previous best published result and exceeding estimated human accuracy.",
+      "type": "empirical_result",
+      "hedging": "asserted",
+      "section": "Experiments",
+      "passage": "Here we report a top-5 validation error of 4.9%, and test error of 4.82% (according to the ILSVRC server). This improves upon the previous best result, and exceeds the estimated accuracy of human raters",
+      "evidence": null,
+      "dependencies": [
+        "intro-10"
+      ],
+      "plain_language": "The BN-Inception ensemble scored 4.9% top-5 error on ImageNet, beating everything before and even passing the estimated human performance benchmark."
+    },
+    {
+      "id": "concl-01",
+      "statement": "We have presented a mechanism for dramatically accelerating the training of deep networks, based on the premise that covariate shift applies to sub-networks and removing it from internal activations aids training.",
+      "type": "methodological_claim",
+      "hedging": "asserted",
+      "section": "Conclusion",
+      "passage": "We have presented a novel mechanism for dramatically accelerating the training of deep networks. It is based on the premise that covariate shift, which is known to complicate the training of machine learning systems, also applies to sub-networks and layers, and removing it from internal activations of the network may aid in training",
+      "evidence": null,
+      "dependencies": [
+        "intro-04",
+        "intro-05"
+      ],
+      "plain_language": "Summary: batch norm speeds up deep-net training a lot. The core idea: covariate shift is a problem inside the network too, not just at the input — so normalize inside."
+    },
+    {
+      "id": "concl-02",
+      "statement": "Batch Normalization adds only two extra parameters (a learned scale and shift) per activation, preserving the representational capacity of the network.",
+      "type": "methodological_claim",
+      "hedging": "asserted",
+      "section": "Conclusion",
+      "passage": "Batch Normalization adds only two extra parameters per activation, and in doing so preserves the representation ability of the network",
+      "evidence": null,
+      "dependencies": [
+        "intro-05"
+      ],
+      "plain_language": "BN adds barely any parameters — just two numbers per activation (a scale and a shift) that the optimizer learns. So the model can still represent anything it could before."
+    },
+    {
+      "id": "concl-03",
+      "statement": "Our future work includes applying Batch Normalization to recurrent neural networks, where internal covariate shift and vanishing/exploding gradients may be especially severe.",
+      "type": "limitation",
+      "hedging": "speculated",
+      "section": "Conclusion",
+      "passage": "Our future work includes applications of our method to Recurrent Neural Networks , where the internal covariate shift and the vanishing or exploding gradients may be especially severe",
+      "evidence": null,
+      "dependencies": [],
+      "plain_language": "Not done yet: applying BN to RNNs, where the same drift and gradient issues are probably even worse."
+    },
+    {
+      "id": "concl-04",
+      "statement": "We plan to investigate whether Batch Normalization helps with classical domain adaptation by allowing generalization to new input distributions via recomputed population statistics.",
+      "type": "limitation",
+      "hedging": "speculated",
+      "section": "Conclusion",
+      "passage": "We plan to investigate whether Batch Normalization can help with domain adaptation, in its traditional sense – i.e. whether the normalization performed by the network would allow it to more easily generalize to new data distributions",
+      "evidence": null,
+      "dependencies": [],
+      "plain_language": "Also on the to-do list: see if BN helps a network generalize across shifted data distributions by just re-estimating the normalization stats on new data."
+    }
+  ]
+}

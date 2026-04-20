@@ -1,0 +1,247 @@
+{
+  "arxiv_id": "2010.11929",
+  "claims": [
+    {
+      "id": "intro-01",
+      "type": "background_claim",
+      "hedging": "asserted",
+      "section": "Introduction",
+      "statement": "Self-attention-based architectures, in particular Transformers, have become the model of choice in natural language processing.",
+      "passage": "Self-attention-based architectures, in particular Transformers , have become the model of choice in natural language processing (NLP)",
+      "evidence": null,
+      "dependencies": [],
+      "plain_language": "In language AI, Transformer-based models have pretty much taken over as the default architecture."
+    },
+    {
+      "id": "intro-02",
+      "type": "background_claim",
+      "hedging": "asserted",
+      "section": "Introduction",
+      "statement": "In computer vision, convolutional architectures remain dominant despite efforts to combine CNNs with self-attention.",
+      "passage": "In computer vision, however, convolutional architectures remain dominant",
+      "evidence": null,
+      "dependencies": [],
+      "plain_language": "In image recognition, the reigning champions are still convolutional neural networks \u2014 the Transformer revolution hasn't really hit vision yet."
+    },
+    {
+      "id": "intro-03",
+      "type": "background_claim",
+      "hedging": "asserted",
+      "section": "Introduction",
+      "statement": "Prior models that replace convolutions entirely with specialized attention patterns, while theoretically efficient, have not yet been scaled effectively on modern hardware accelerators.",
+      "passage": "The latter models, while theoretically efficient, have not yet been scaled effectively on modern hardware accelerators due to the use of specialized attention patterns",
+      "evidence": null,
+      "dependencies": [],
+      "plain_language": "Earlier attempts to replace CNNs entirely with attention used clever-but-custom attention patterns that don't run fast on current GPUs, so they never actually scaled up."
+    },
+    {
+      "id": "intro-04",
+      "type": "methodological_claim",
+      "hedging": "asserted",
+      "section": "Introduction",
+      "statement": "We apply a standard Transformer directly to images with the fewest possible modifications by splitting the image into patches and feeding their linear embeddings as input.",
+      "passage": "we experiment with applying a standard Transformer directly to images, with the fewest possible modifications. To do so, we split an image into patches and provide the sequence of linear embeddings of these patches as an input to a Transformer",
+      "evidence": "Figure 1",
+      "dependencies": [],
+      "plain_language": "Our trick: cut the image into little square patches (say 16x16 pixels each), treat each patch like a word, and feed the sequence through a standard Transformer. No vision-specific tricks."
+    },
+    {
+      "id": "intro-05",
+      "type": "methodological_claim",
+      "hedging": "asserted",
+      "section": "Introduction",
+      "statement": "Image patches are treated the same way as tokens in an NLP application.",
+      "passage": "Image patches are treated the same way as tokens (words) in an NLP application",
+      "evidence": null,
+      "dependencies": ["intro-04"],
+      "plain_language": "Each image patch is basically a word to us \u2014 same embedding, same positional encoding, same attention math."
+    },
+    {
+      "id": "intro-06",
+      "type": "empirical_result",
+      "hedging": "asserted",
+      "section": "Introduction",
+      "statement": "When trained on mid-sized datasets such as ImageNet without strong regularization, ViT yields accuracies a few percentage points below ResNets of comparable size.",
+      "passage": "When trained on mid-sized datasets such as ImageNet without strong regularization, these models yield modest accuracies of a few percentage points below ResNets of comparable size",
+      "evidence": null,
+      "dependencies": ["intro-04"],
+      "plain_language": "Train a Transformer on a normal-sized image dataset like ImageNet and it underperforms a same-sized ResNet by a few percentage points."
+    },
+    {
+      "id": "intro-07",
+      "type": "theoretical_claim",
+      "hedging": "suggested",
+      "section": "Introduction",
+      "statement": "Transformers lack inductive biases inherent to CNNs \u2014 translation equivariance and locality \u2014 and therefore do not generalize well when trained on insufficient data.",
+      "passage": "Transformers lack some of the inductive biases inherent to CNNs, such as translation equivariance and locality, and therefore do not generalize well when trained on insufficient amounts of data",
+      "evidence": null,
+      "dependencies": ["intro-06"],
+      "plain_language": "CNNs have a few baked-in assumptions (\u201cthe answer shouldn't change if you shift the image a bit\u201d, \u201cnearby pixels matter more\u201d) that help on small datasets. Transformers don't, which is why they struggle until you give them lots of data."
+    },
+    {
+      "id": "intro-08",
+      "type": "empirical_result",
+      "hedging": "asserted",
+      "section": "Introduction",
+      "statement": "When pre-trained on larger datasets (14M\u2013300M images), ViT matches or exceeds state of the art \u2014 large-scale training trumps inductive bias.",
+      "passage": "the picture changes if the models are trained on larger datasets (14M-300M images). We find that large scale training trumps inductive bias",
+      "evidence": null,
+      "dependencies": ["intro-07"],
+      "plain_language": "Scale fixes it. With 14M\u2013300M images of pre-training, ViT catches up to and then passes the best CNNs \u2014 the extra data makes up for the missing priors."
+    },
+    {
+      "id": "intro-09",
+      "type": "empirical_result",
+      "hedging": "asserted",
+      "section": "Introduction",
+      "statement": "The best ViT reaches 88.55% on ImageNet, 90.72% on ImageNet-ReaL, 94.55% on CIFAR-100, and 77.63% on the VTAB 19-task suite.",
+      "passage": "the best model reaches the accuracy of \\(88.55\\%\\) on ImageNet, \\(90.72\\%\\) on ImageNet-ReaL, \\(94.55\\%\\) on CIFAR-100, and \\(77.63\\%\\) on the VTAB suite of 19 tasks",
+      "evidence": null,
+      "dependencies": ["intro-08"],
+      "plain_language": "Headline numbers: our best ViT hits 88.55% on ImageNet, 94.55% on CIFAR-100, and 77.63% averaged over the 19-task VTAB benchmark."
+    },
+    {
+      "id": "method-01",
+      "type": "methodological_claim",
+      "hedging": "asserted",
+      "section": "Method",
+      "statement": "We reshape each image into a sequence of fixed-size 2D patches, then map each flattened patch to a D-dimensional vector via a trainable linear projection \u2014 the patch embeddings.",
+      "passage": "we reshape the image \\(\\mathbf{x} \\in \\mathbb{R}^{H \\times W \\times C}\\) into a sequence of flattened 2D patches",
+      "evidence": null,
+      "dependencies": ["intro-04"],
+      "plain_language": "Each image becomes a sequence of patches. Each patch is flattened to a vector and linearly projected to the model's hidden size \u2014 that's the input \u201ctoken\u201d."
+    },
+    {
+      "id": "method-02",
+      "type": "methodological_claim",
+      "hedging": "asserted",
+      "section": "Method",
+      "statement": "Similar to BERT's [class] token, we prepend a learnable classification embedding whose output state is used as the image representation.",
+      "passage": "Similar to BERT\u2019s [class] token, we prepend a learnable embedding to the sequence of embedded patches",
+      "evidence": null,
+      "dependencies": ["method-01"],
+      "plain_language": "We prepend a special learnable token to the sequence \u2014 exactly like BERT's [CLS]. Its final-layer output is the single vector we use to classify the image."
+    },
+    {
+      "id": "method-03",
+      "type": "methodological_claim",
+      "hedging": "asserted",
+      "section": "Method",
+      "statement": "We use standard learnable 1D position embeddings; we observed no significant gains from 2D-aware alternatives.",
+      "passage": "We use standard learnable 1D position embeddings, since we have not observed significant performance gains from using more advanced 2D-aware position embeddings",
+      "evidence": "Appendix",
+      "dependencies": ["method-01"],
+      "plain_language": "Patches get simple 1D position embeddings (just \u201cthis is patch #37\u201d). We tried smarter 2D position encodings; they didn't help."
+    },
+    {
+      "id": "method-04",
+      "type": "methodological_claim",
+      "hedging": "asserted",
+      "section": "Method",
+      "statement": "The Transformer encoder alternates multi-headed self-attention blocks and MLP blocks, with LayerNorm before every block and residual connections after.",
+      "passage": "The Transformer encoder consists of alternating layers of multiheaded self-attention (MSA, see Appendix 6 ) and MLP blocks",
+      "evidence": null,
+      "dependencies": [],
+      "plain_language": "The encoder is the standard Transformer recipe: attention, then MLP, repeated, with LayerNorm before each block and residual skip connections around them."
+    },
+    {
+      "id": "method-05",
+      "type": "methodological_claim",
+      "hedging": "asserted",
+      "section": "Method",
+      "statement": "The classification head is a two-layer MLP during pre-training and a single linear layer during fine-tuning.",
+      "passage": "The classification head is implemented by a MLP with one hidden layer at pre-training time and by a single linear layer at fine-tuning time",
+      "evidence": null,
+      "dependencies": ["method-02"],
+      "plain_language": "Classifier on top is a small two-layer MLP while pre-training; during fine-tuning we swap it for a single linear layer."
+    },
+    {
+      "id": "exp-01",
+      "type": "methodological_claim",
+      "hedging": "asserted",
+      "section": "Experiments",
+      "statement": "Three ViT sizes based on BERT's configurations: ViT-Base (12 layers, 768 hidden, 86M parameters), ViT-Large (24 layers, 1024 hidden, 307M parameters), and ViT-Huge (32 layers, 1280 hidden, 632M parameters).",
+      "passage": "ViT-Base 12 768 3072 12 86M ViT-Large 24 1024 4096 16 307M ViT-Huge 32 1280 5120 16 632M",
+      "evidence": "Table 1",
+      "dependencies": [],
+      "plain_language": "Three sizes: Base (86M parameters), Large (307M), Huge (632M). The first two borrow exactly from BERT; Huge is new."
+    },
+    {
+      "id": "exp-02",
+      "type": "methodological_claim",
+      "hedging": "asserted",
+      "section": "Experiments",
+      "statement": "Pre-training uses ImageNet (1.3M images), ImageNet-21k (14M images), and JFT (303M high-resolution images); pre-training datasets are de-duplicated against the downstream test sets.",
+      "passage": "we use the ILSVRC-2012 ImageNet dataset with 1k classes and 1.3M images (we refer to it as ImageNet in what follows), its superset ImageNet-21k with 21k classes and 14M images , and JFT with 18k classes and 303M high-resolution images",
+      "evidence": null,
+      "dependencies": [],
+      "plain_language": "Pre-training datasets span three sizes: 1.3M, 14M, and 303M images \u2014 the last one is Google's internal JFT. We also carefully remove anything that overlaps with the test sets."
+    },
+    {
+      "id": "exp-03",
+      "type": "empirical_result",
+      "hedging": "asserted",
+      "section": "Experiments",
+      "statement": "When considering computational cost of pre-training, ViT attains state of the art on most recognition benchmarks at a lower pre-training cost than comparable CNN baselines.",
+      "passage": "When considering the computational cost of pre-training the model, ViT performs very favourably, attaining state of the art on most recognition benchmarks at a lower pre-training cost",
+      "evidence": null,
+      "dependencies": ["exp-01"],
+      "plain_language": "If you measure \u201chow much compute did you spend to reach this accuracy\u201d, ViT wins \u2014 it hits state-of-the-art on most image benchmarks with less training compute than the competing CNN baselines."
+    },
+    {
+      "id": "concl-01",
+      "type": "methodological_claim",
+      "hedging": "asserted",
+      "section": "Conclusion",
+      "statement": "Aside from the initial patch extraction step, we introduce no image-specific inductive biases; we interpret an image as a sequence of patches and process it with a standard NLP Transformer encoder.",
+      "passage": "we do not introduce image-specific inductive biases into the architecture apart from the initial patch extraction step. Instead, we interpret an image as a sequence of patches and process it by a standard Transformer encoder as used in NLP",
+      "evidence": null,
+      "dependencies": ["intro-04"],
+      "plain_language": "The only vision-specific thing ViT does is slicing the image into patches. After that it's just an NLP-style Transformer \u2014 no special kernels, no pyramid, no locality tricks."
+    },
+    {
+      "id": "concl-02",
+      "type": "empirical_result",
+      "hedging": "asserted",
+      "section": "Conclusion",
+      "statement": "Vision Transformer matches or exceeds the state of the art on many image classification datasets whilst being relatively cheap to pre-train.",
+      "passage": "Vision Transformer matches or exceeds the state of the art on many image classification datasets, whilst being relatively cheap to pre-train",
+      "evidence": null,
+      "dependencies": ["intro-08"],
+      "plain_language": "Net result: ViT beats or ties the best CNN image classifiers on many benchmarks, and it didn't cost more compute to get there."
+    },
+    {
+      "id": "concl-03",
+      "type": "limitation",
+      "hedging": "speculated",
+      "section": "Conclusion",
+      "statement": "One remaining challenge is applying ViT to other computer-vision tasks such as detection and segmentation.",
+      "passage": "One is to apply ViT to other computer vision tasks, such as detection and segmentation",
+      "evidence": null,
+      "dependencies": [],
+      "plain_language": "Not done yet: we've only shown this works for image classification. Detection and segmentation are obvious next frontiers."
+    },
+    {
+      "id": "concl-04",
+      "type": "limitation",
+      "hedging": "suggested",
+      "section": "Conclusion",
+      "statement": "Another challenge is self-supervised pre-training: our initial experiments show improvement but a large gap remains between self-supervised and large-scale supervised pre-training.",
+      "passage": "Our initial experiments show improvement from self-supervised pre-training, but there is still large gap between self-supervised and large-scale supervised pre-training",
+      "evidence": null,
+      "dependencies": [],
+      "plain_language": "We'd like ViT to learn from unlabeled images the way BERT learns from unlabeled text. It works a little, but there's still a big gap between self-supervised and fully supervised pre-training."
+    },
+    {
+      "id": "concl-05",
+      "type": "limitation",
+      "hedging": "speculated",
+      "section": "Conclusion",
+      "statement": "Further scaling of ViT would likely lead to improved performance.",
+      "passage": "further scaling of ViT would likely lead to improved performance",
+      "evidence": null,
+      "dependencies": ["intro-08"],
+      "plain_language": "The scaling trend didn't flatten \u2014 a larger ViT on more data should keep going up."
+    }
+  ]
+}

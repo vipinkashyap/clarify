@@ -1,0 +1,312 @@
+{
+  "arxiv_id": "1706.03762",
+  "claims": [
+    {
+      "id": "intro-01",
+      "statement": "Recurrent neural networks, long short-term memory and gated recurrent neural networks in particular, have been firmly established as state of the art approaches in sequence modeling and transduction problems such as language modeling and machine translation.",
+      "type": "background_claim",
+      "hedging": "asserted",
+      "section": "Introduction",
+      "passage": "Recurrent neural networks, long short-term memory and gated recurrent neural networks in particular, have been firmly established as state of the art approaches in sequence modeling and transduction problems such as language modeling and machine translation",
+      "evidence": null,
+      "dependencies": [],
+      "plain_language": "recurrent neural networks — especially LSTMs and GRUs — were the standard tools for language modeling and translation before the Transformer"
+    },
+    {
+      "id": "intro-02",
+      "statement": "The inherently sequential nature of recurrent models precludes parallelization within training examples, which becomes critical at longer sequence lengths.",
+      "type": "background_claim",
+      "hedging": "asserted",
+      "section": "Introduction",
+      "passage": "This inherently sequential nature precludes parallelization within training examples, which becomes critical at longer sequence lengths, as memory constraints limit batching across examples",
+      "evidence": null,
+      "dependencies": [],
+      "plain_language": "RNNs have to process a sentence one word at a time, so you can't spread the work across many GPUs. This hurts a lot on longer sentences, where memory runs out fast."
+    },
+    {
+      "id": "intro-03",
+      "statement": "We propose the Transformer, a model architecture eschewing recurrence and instead relying entirely on an attention mechanism to draw global dependencies between input and output.",
+      "type": "methodological_claim",
+      "hedging": "asserted",
+      "section": "Introduction",
+      "passage": "we propose the Transformer, a model architecture eschewing recurrence and instead relying entirely on an attention mechanism to draw global dependencies between input and output",
+      "evidence": null,
+      "dependencies": [],
+      "plain_language": "We built a new model — the Transformer — that throws out recurrence entirely and uses only attention to relate words across a sentence."
+    },
+    {
+      "id": "intro-04",
+      "statement": "The Transformer allows for significantly more parallelization and can reach a new state of the art in translation quality after being trained for as little as twelve hours on eight P100 GPUs.",
+      "type": "empirical_result",
+      "hedging": "asserted",
+      "section": "Introduction",
+      "passage": "The Transformer allows for significantly more parallelization and can reach a new state of the art in translation quality after being trained for as little as twelve hours on eight P100 GPUs",
+      "evidence": null,
+      "dependencies": [
+        "intro-03"
+      ],
+      "plain_language": "The Transformer trains much faster than RNN-based models — we hit a new state of the art in about twelve hours on eight GPUs."
+    },
+    {
+      "id": "background-01",
+      "statement": "In convolutional sequence models (Extended Neural GPU, ByteNet, ConvS2S), the number of operations required to relate signals from two arbitrary positions grows with their distance — linearly for ConvS2S and logarithmically for ByteNet — making it more difficult to learn long-range dependencies.",
+      "type": "background_claim",
+      "hedging": "asserted",
+      "section": "Background",
+      "passage": "the number of operations required to relate signals from two arbitrary input or output positions grows in the distance between positions, linearly for ConvS2S and logarithmically for ByteNet. This makes it more difficult to learn dependencies between distant positions",
+      "evidence": null,
+      "dependencies": [],
+      "plain_language": "Earlier convolution-based models (like ConvS2S and ByteNet) still pay a cost that grows with the distance between words, which makes it hard for them to learn connections between words that are far apart."
+    },
+    {
+      "id": "model-01",
+      "statement": "The encoder is composed of a stack of N=6 identical layers; each layer has two sub-layers — a multi-head self-attention mechanism and a position-wise fully connected feed-forward network — with a residual connection and layer normalization around each.",
+      "type": "methodological_claim",
+      "hedging": "asserted",
+      "section": "Model Architecture",
+      "passage": "The encoder is composed of a stack of \\(N=6\\) identical layers. Each layer has two sub-layers. The first is a multi-head self-attention mechanism, and the second is a simple, position-wise fully connected feed-forward network",
+      "evidence": "Figure 1",
+      "dependencies": [],
+      "plain_language": "The encoder is six identical layers stacked up. Each layer has two pieces: a self-attention step and a small feed-forward network, with residual connections so information can skip around."
+    },
+    {
+      "id": "model-02",
+      "statement": "The decoder modifies its self-attention sub-layer to prevent positions from attending to subsequent positions, so that the prediction for position i depends only on outputs at earlier positions.",
+      "type": "methodological_claim",
+      "hedging": "asserted",
+      "section": "Model Architecture",
+      "passage": "We also modify the self-attention sub-layer in the decoder stack to prevent positions from attending to subsequent positions",
+      "evidence": null,
+      "dependencies": [],
+      "plain_language": "When the decoder generates word i, it isn't allowed to peek at words after i — we mask those out so it has to predict them."
+    },
+    {
+      "id": "model-03",
+      "statement": "We compute the attention as dot products of queries with keys, scale by 1/sqrt(d_k), and apply a softmax to obtain the weights over values.",
+      "type": "methodological_claim",
+      "hedging": "asserted",
+      "section": "Model Architecture",
+      "passage": "We compute the dot products of the query with all keys, divide each by \\(\\sqrt{d_k}\\) , and apply a softmax function to obtain the weights on the values",
+      "evidence": null,
+      "dependencies": [],
+      "plain_language": "Attention works by scoring each pair of query and key by their dot product, scaling it down (by √d_k), then turning the scores into a probability distribution."
+    },
+    {
+      "id": "model-04",
+      "statement": "We suspect that for large values of d_k the dot products grow large in magnitude, pushing the softmax into regions with extremely small gradients; we scale by 1/sqrt(d_k) to counteract this.",
+      "type": "theoretical_claim",
+      "hedging": "suggested",
+      "section": "Model Architecture",
+      "passage": "We suspect that for large values of \\(d_k\\) , the dot products grow large in magnitude, pushing the softmax function into regions where it has extremely small gradients",
+      "evidence": null,
+      "dependencies": [
+        "model-03"
+      ],
+      "plain_language": "With big key dimensions, dot products get huge, which kills softmax gradients. We divide by √d_k so that doesn't happen."
+    },
+    {
+      "id": "model-05a",
+      "statement": "Multi-head attention lets the model jointly attend to information from different representation subspaces at different positions; a single attention head averages this away.",
+      "type": "methodological_claim",
+      "hedging": "asserted",
+      "section": "Model Architecture",
+      "passage": "Multi-head attention allows the model to jointly attend to information from different representation subspaces at different positions. With a single attention head, averaging inhibits this",
+      "evidence": null,
+      "dependencies": [],
+      "plain_language": "Having several heads means the model can pay attention in several different ways at once — one head might focus on grammar, another on meaning, etc. One head alone would mash those together."
+    },
+    {
+      "id": "model-05",
+      "statement": "We employ h=8 parallel attention heads, each with d_k = d_v = d_model / h = 64, keeping total computational cost similar to single-head attention at full dimensionality.",
+      "type": "methodological_claim",
+      "hedging": "asserted",
+      "section": "Model Architecture",
+      "passage": "In this work we employ \\(h=8\\) parallel attention layers, or heads. For each of these we use \\(d_k=d_v=d_{\\text{model}}/h=64\\)",
+      "evidence": null,
+      "dependencies": [],
+      "plain_language": "We run 8 attention heads in parallel. Each head looks at a smaller slice, so the total compute is about the same as doing it all in one big head."
+    },
+    {
+      "id": "model-06",
+      "statement": "Because the model has no recurrence or convolution, we inject positional information via sinusoidal positional encodings added to the input embeddings.",
+      "type": "methodological_claim",
+      "hedging": "asserted",
+      "section": "Model Architecture",
+      "passage": "we add \"positional encodings\" to the input embeddings at the bottoms of the encoder and decoder stacks",
+      "evidence": null,
+      "dependencies": [],
+      "plain_language": "The model has no sense of word order on its own, so we add a pattern of sines and cosines to each word's embedding to tell it which position the word sits in."
+    },
+    {
+      "id": "model-07",
+      "statement": "We chose the sinusoidal version because it may allow the model to extrapolate to sequence lengths longer than those encountered during training.",
+      "type": "theoretical_claim",
+      "hedging": "speculated",
+      "section": "Model Architecture",
+      "passage": "We chose the sinusoidal version because it may allow the model to extrapolate to sequence lengths longer than the ones encountered during training",
+      "evidence": null,
+      "dependencies": [
+        "model-06"
+      ],
+      "plain_language": "We picked sinusoids over learned position embeddings because the pattern keeps going forever — so maybe the model handles longer sentences than it ever saw in training."
+    },
+    {
+      "id": "whyself-01",
+      "statement": "A self-attention layer connects all positions with a constant number of sequentially executed operations, whereas a recurrent layer requires O(n) sequential operations.",
+      "type": "theoretical_claim",
+      "hedging": "asserted",
+      "section": "Why Self-Attention",
+      "passage": "a self-attention layer connects all positions with a constant number of sequentially executed operations, whereas a recurrent layer requires \\(O(n)\\) sequential operations",
+      "evidence": "Table 1",
+      "dependencies": [],
+      "plain_language": "Self-attention can relate any two words in a constant number of steps. An RNN needs a step per word, so it's much harder to parallelize."
+    },
+    {
+      "id": "whyself-02",
+      "statement": "When the sequence length n is smaller than the representation dimension d (the typical case in machine translation with word-piece or byte-pair tokens), self-attention layers are faster than recurrent layers.",
+      "type": "theoretical_claim",
+      "hedging": "asserted",
+      "section": "Why Self-Attention",
+      "passage": "self-attention layers are faster than recurrent layers when the sequence length \\(n\\) is smaller than the representation dimensionality \\(d\\) , which is most often the case with sentence representations used by state-of-the-art models in machine translations",
+      "evidence": "Table 1",
+      "dependencies": [
+        "whyself-01"
+      ],
+      "plain_language": "For normal translation sentences, self-attention actually does less work than an RNN layer would."
+    },
+    {
+      "id": "whyself-03",
+      "statement": "As a side benefit, self-attention could yield more interpretable models; different attention heads appear to specialize, some exhibiting behavior tied to syntactic and semantic structure.",
+      "type": "theoretical_claim",
+      "hedging": "suggested",
+      "section": "Why Self-Attention",
+      "passage": "self-attention could yield more interpretable models. We inspect attention distributions from our models and present and discuss examples in the appendix",
+      "evidence": "Appendix",
+      "dependencies": [],
+      "plain_language": "A nice bonus: attention is visible. We can actually look at what each head is focusing on, and some heads seem to capture grammar-like patterns."
+    },
+    {
+      "id": "training-01",
+      "statement": "We trained on WMT 2014 English-German (~4.5M sentence pairs) and WMT 2014 English-French (36M sentences), using byte-pair / word-piece vocabularies.",
+      "type": "methodological_claim",
+      "hedging": "asserted",
+      "section": "Training",
+      "passage": "We trained on the standard WMT 2014 English-German dataset consisting of about 4.5 million sentence pairs",
+      "evidence": null,
+      "dependencies": [],
+      "plain_language": "Training data: the WMT 2014 English-German and English-French corpora — a few million sentence pairs each."
+    },
+    {
+      "id": "training-02",
+      "statement": "We trained using the Adam optimizer with beta_1 = 0.9, beta_2 = 0.98, epsilon = 1e-9, with a warmup-then-inverse-square-root learning rate schedule.",
+      "type": "methodological_claim",
+      "hedging": "asserted",
+      "section": "Training",
+      "passage": "We used the Adam optimizer",
+      "evidence": null,
+      "dependencies": [],
+      "plain_language": "Training used the Adam optimizer with its standard momentum-ish settings, plus a learning rate that warms up over 4000 steps and then decays."
+    },
+    {
+      "id": "results-00",
+      "statement": "Single-head attention is 0.9 BLEU worse than the best multi-head setting, and quality also drops when we use too many heads.",
+      "type": "empirical_result",
+      "hedging": "asserted",
+      "section": "Results",
+      "passage": "single-head attention is 0.9 BLEU worse than the best setting, quality also drops off with too many heads",
+      "evidence": "Table 3 row (A)",
+      "dependencies": [
+        "model-05"
+      ],
+      "plain_language": "Using just one attention head loses almost a full BLEU point versus the best head count. Too many heads also hurt — there's a sweet spot."
+    },
+    {
+      "id": "results-01",
+      "statement": "On WMT 2014 English-to-German, the big Transformer outperforms the best previously reported models (including ensembles) by more than 2.0 BLEU, establishing a new state-of-the-art BLEU score of 28.4.",
+      "type": "empirical_result",
+      "hedging": "asserted",
+      "section": "Results",
+      "passage": "the big transformer model (Transformer (big) in Table 2 ) outperforms the best previously reported models (including ensembles) by more than \\(2.0\\) BLEU, establishing a new state-of-the-art BLEU score of \\(28.4\\)",
+      "evidence": "Table 2",
+      "dependencies": [
+        "model-01",
+        "model-05"
+      ],
+      "plain_language": "the big Transformer beat every prior model — including ensembles — by more than 2 BLEU points, setting a new state of the art at 28.4 BLEU."
+    },
+    {
+      "id": "results-02",
+      "statement": "Training the big model took 3.5 days on 8 P100 GPUs.",
+      "type": "empirical_result",
+      "hedging": "asserted",
+      "section": "Results",
+      "passage": "Training took \\(3.5\\) days on \\(8\\) P100 GPUs",
+      "evidence": null,
+      "dependencies": [
+        "results-01"
+      ],
+      "plain_language": "That best result took 3.5 days of training on 8 GPUs — a tiny fraction of what competing models cost."
+    },
+    {
+      "id": "results-03",
+      "statement": "On WMT 2014 English-to-French, the big Transformer achieves 41.0 BLEU, outperforming all previously published single models at less than 1/4 the training cost of the previous state of the art.",
+      "type": "empirical_result",
+      "hedging": "asserted",
+      "section": "Results",
+      "passage": "our big model achieves a BLEU score of \\(41.0\\) , outperforming all of the previously published single models, at less than \\(1/4\\) the training cost of the previous state-of-the-art model",
+      "evidence": "Table 2",
+      "dependencies": [
+        "model-01"
+      ],
+      "plain_language": "our big model hit 41.0 BLEU, beating every previous single model while using under a quarter of the compute."
+    },
+    {
+      "id": "results-04",
+      "statement": "Reducing the attention key size d_k hurts model quality, suggesting that determining compatibility is not easy and that a more sophisticated compatibility function than dot product may be beneficial.",
+      "type": "theoretical_claim",
+      "hedging": "suggested",
+      "section": "Results",
+      "passage": "reducing the attention key size \\(d_k\\) hurts model quality. This suggests that determining compatibility is not easy and that a more sophisticated compatibility function than dot product may be beneficial",
+      "evidence": "Table 3 row (B)",
+      "dependencies": [
+        "model-03"
+      ],
+      "plain_language": "Shrinking the attention key dimension noticeably hurt quality — maybe plain dot products are too simple a way to decide what matches what."
+    },
+    {
+      "id": "results-05",
+      "statement": "Replacing sinusoidal positional encodings with learned positional embeddings yields nearly identical results.",
+      "type": "empirical_result",
+      "hedging": "asserted",
+      "section": "Results",
+      "passage": "we replace our sinusoidal positional encoding with learned positional embeddings , and observe nearly identical results to the base model",
+      "evidence": "Table 3 row (E)",
+      "dependencies": [
+        "model-06"
+      ],
+      "plain_language": "Learned position embeddings worked about the same as the sinusoidal ones — the specific choice didn't matter much on these benchmarks."
+    },
+    {
+      "id": "results-06",
+      "statement": "On English constituency parsing, despite the lack of task-specific tuning the Transformer performs surprisingly well, yielding better results than all previously reported models except the Recurrent Neural Network Grammar.",
+      "type": "empirical_result",
+      "hedging": "asserted",
+      "section": "Results",
+      "passage": "despite the lack of task-specific tuning our model performs surprisingly well, yielding better results than all previously reported models with the exception of the Recurrent Neural Network Grammar",
+      "evidence": "Table 4",
+      "dependencies": [],
+      "plain_language": "Even on a different task — parsing sentences into grammatical trees — the Transformer does really well without any task-specific tweaking."
+    },
+    {
+      "id": "conclusion-01",
+      "statement": "Making generation less sequential is another research goal of ours.",
+      "type": "limitation",
+      "hedging": "speculated",
+      "section": "Conclusion",
+      "passage": "Making generation less sequential is another research goals of ours",
+      "evidence": null,
+      "dependencies": [],
+      "plain_language": "One thing this model still does serially: generating output tokens one at a time. We'd like to change that in future work."
+    }
+  ]
+}

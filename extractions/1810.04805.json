@@ -1,0 +1,304 @@
+{
+  "arxiv_id": "1810.04805",
+  "claims": [
+    {
+      "id": "intro-01",
+      "statement": "Language model pre-training is effective for improving many natural language processing tasks, across both sentence-level and token-level tasks.",
+      "type": "background_claim",
+      "hedging": "asserted",
+      "section": "Introduction",
+      "passage": "Language model pre-training has been shown to be effective for improving many natural language processing tasks",
+      "evidence": null,
+      "dependencies": [],
+      "plain_language": "Pre-training a language model on lots of text first, then adapting it to a specific task, reliably beats training from scratch on most NLP problems."
+    },
+    {
+      "id": "intro-02",
+      "statement": "Two strategies apply pre-trained language representations to downstream tasks: a feature-based approach (as in ELMo) and a fine-tuning approach (as in OpenAI GPT).",
+      "type": "background_claim",
+      "hedging": "asserted",
+      "section": "Introduction",
+      "passage": "There are two existing strategies for applying pre-trained language representations to downstream tasks: feature-based and fine-tuning",
+      "evidence": null,
+      "dependencies": [],
+      "plain_language": "Before BERT, there were two ways to use a pre-trained language model for a new task: keep its weights frozen and tack on a new model (ELMo), or fine-tune all the weights (GPT)."
+    },
+    {
+      "id": "intro-03",
+      "statement": "Standard pre-trained language models are unidirectional, which limits the choice of pre-training architectures and is sub-optimal for sentence-level and token-level tasks.",
+      "type": "background_claim",
+      "hedging": "asserted",
+      "section": "Introduction",
+      "passage": "The major limitation is that standard language models are unidirectional, and this limits the choice of architectures that can be used during pre-training",
+      "evidence": null,
+      "dependencies": [],
+      "plain_language": "Earlier language models could only read text left-to-right. That missed half the context, and really hurt tasks where context to the right of a word matters (like finding answers in a passage)."
+    },
+    {
+      "id": "intro-04",
+      "statement": "We introduce BERT, which alleviates the unidirectionality constraint by using a masked language model (MLM) pre-training objective inspired by the Cloze task.",
+      "type": "methodological_claim",
+      "hedging": "asserted",
+      "section": "Introduction",
+      "passage": "BERT alleviates the previously mentioned unidirectionality constraint by using a “masked language model” (MLM) pre-training objective, inspired by the Cloze task",
+      "evidence": null,
+      "dependencies": [],
+      "plain_language": "BERT's key trick: randomly hide some words in the input and ask the model to guess them. Because the hidden word could be predicted from both sides, the model can learn from left *and* right context at once."
+    },
+    {
+      "id": "intro-05",
+      "statement": "In addition to the masked LM, we use a next-sentence-prediction task to jointly pre-train text-pair representations.",
+      "type": "methodological_claim",
+      "hedging": "asserted",
+      "section": "Introduction",
+      "passage": "we also use a “next sentence prediction” task that jointly pre-trains text-pair representations",
+      "evidence": null,
+      "dependencies": [
+        "intro-04"
+      ],
+      "plain_language": "Second trick: give BERT pairs of sentences and ask whether the second one really follows the first, or is random. This teaches the model to reason about sentence relationships."
+    },
+    {
+      "id": "intro-06",
+      "statement": "BERT advances the state of the art for eleven NLP tasks.",
+      "type": "empirical_result",
+      "hedging": "asserted",
+      "section": "Introduction",
+      "passage": "BERT advances the state of the art for eleven NLP tasks",
+      "evidence": null,
+      "dependencies": [
+        "intro-04",
+        "intro-05"
+      ],
+      "plain_language": "BERT sets a new top score on eleven different language tasks — a broad sweep, not a narrow win."
+    },
+    {
+      "id": "bert-01",
+      "statement": "BERT has two steps: unsupervised pre-training on unlabeled text, and then fine-tuning from the pre-trained weights on each downstream task's labeled data.",
+      "type": "methodological_claim",
+      "hedging": "asserted",
+      "section": "BERT",
+      "passage": "There are two steps in our framework: pre-training and fine-tuning . During pre-training, the model is trained on unlabeled data over different pre-training tasks. For fine-tuning, the BERT model is first initialized with the pre-trained parameters, and all of the parameters are fine-tuned using labeled data from the downstream tasks",
+      "evidence": null,
+      "dependencies": [],
+      "plain_language": "Training has two stages. Stage 1: learn from mountains of raw text with no labels. Stage 2: take that pre-trained model and tune it on a labeled dataset for whatever task you care about."
+    },
+    {
+      "id": "bert-02",
+      "statement": "We report results on two model sizes: BERT-BASE (L=12, H=768, A=12, 110M parameters) and BERT-LARGE (L=24, H=1024, A=16, 340M parameters).",
+      "type": "methodological_claim",
+      "hedging": "asserted",
+      "section": "BERT",
+      "passage": "BERT \\(_{\\small \\textsc{BASE}}\\) (L=12, H=768, A=12, Total Parameters=110M) and BERT \\(_{\\small \\textsc{LARGE}}\\) (L=24, H=1024, A=16, Total Parameters=340M)",
+      "evidence": null,
+      "dependencies": [],
+      "plain_language": "Two model sizes in the paper: BERT-BASE (about the size of GPT, 110M parameters) and BERT-LARGE (3x bigger, 340M parameters)."
+    },
+    {
+      "id": "bert-03",
+      "statement": "BERT uses bidirectional self-attention, unlike GPT which uses constrained (left-only) self-attention.",
+      "type": "methodological_claim",
+      "hedging": "asserted",
+      "section": "BERT",
+      "passage": "the BERT Transformer uses bidirectional self-attention, while the GPT Transformer uses constrained self-attention where every token can only attend to context to its left",
+      "evidence": null,
+      "dependencies": [
+        "intro-04"
+      ],
+      "plain_language": "Every BERT layer looks both left and right at all other tokens. GPT layers can only look left."
+    },
+    {
+      "id": "bert-04",
+      "statement": "We mask 15% of WordPiece tokens in each sequence; of these, 80% are replaced with [MASK], 10% with a random token, and 10% left unchanged.",
+      "type": "methodological_claim",
+      "hedging": "asserted",
+      "section": "BERT",
+      "passage": "we mask 15% of all WordPiece tokens in each sequence at random",
+      "evidence": null,
+      "dependencies": [
+        "intro-04"
+      ],
+      "plain_language": "When masking for training, we hide 15% of tokens. To keep the model from over-relying on the special [MASK] symbol (which it never sees at fine-tune time), we sometimes leave the word alone or swap it with a random one."
+    },
+    {
+      "id": "bert-05",
+      "statement": "For next sentence prediction, 50% of sentence pairs B are actual next sentences of A (IsNext) and 50% are random (NotNext).",
+      "type": "methodological_claim",
+      "hedging": "asserted",
+      "section": "BERT",
+      "passage": "50% of the time B is the actual next sentence that follows A (labeled as IsNext ), and 50% of the time it is a random sentence from the corpus (labeled as NotNext )",
+      "evidence": null,
+      "dependencies": [
+        "intro-05"
+      ],
+      "plain_language": "To teach BERT about sentence relationships, we feed pairs where half the time sentence B really did come after A in the source text, and half the time B is just a random sentence."
+    },
+    {
+      "id": "bert-06",
+      "statement": "Pre-training uses the BooksCorpus (800M words) and English Wikipedia (2,500M words).",
+      "type": "methodological_claim",
+      "hedging": "asserted",
+      "section": "BERT",
+      "passage": "we use the BooksCorpus (800M words) and English Wikipedia (2,500M words)",
+      "evidence": null,
+      "dependencies": [
+        "bert-01"
+      ],
+      "plain_language": "Pre-training data: a big pile of Wikipedia articles plus a corpus of English books — roughly 3 billion words total."
+    },
+    {
+      "id": "bert-07",
+      "statement": "Fine-tuning is relatively inexpensive; all paper results can be replicated in at most 1 hour on a single Cloud TPU, or a few hours on a GPU.",
+      "type": "methodological_claim",
+      "hedging": "asserted",
+      "section": "BERT",
+      "passage": "Compared to pre-training, fine-tuning is relatively inexpensive. All of the results in the paper can be replicated in at most 1 hour on a single Cloud TPU, or a few hours on a GPU",
+      "evidence": null,
+      "dependencies": [
+        "bert-01"
+      ],
+      "plain_language": "Pre-training is expensive, but once that's done, fine-tuning BERT on any of the paper's tasks is cheap — under an hour on one TPU."
+    },
+    {
+      "id": "exp-01",
+      "statement": "Both BERT-BASE and BERT-LARGE outperform all prior systems on every GLUE task, with 4.5% and 7.0% average accuracy improvement over the prior state of the art respectively.",
+      "type": "empirical_result",
+      "hedging": "asserted",
+      "section": "Experiments",
+      "passage": "Both BERT \\(_{\\small \\textsc{BASE}}\\) and BERT \\(_{\\small \\textsc{LARGE}}\\) outperform all systems on all tasks by a substantial margin, obtaining 4.5% and 7.0% respective average accuracy improvement over the prior state of the art",
+      "evidence": "Table 1",
+      "dependencies": [
+        "bert-02"
+      ],
+      "plain_language": "On the GLUE benchmark — nine different language tasks — BERT-BASE beat every prior system by an average of 4.5%, and BERT-LARGE beat them by 7%."
+    },
+    {
+      "id": "exp-02",
+      "statement": "On GLUE, BERT obtains a 4.6% absolute accuracy improvement on MNLI, the largest and most widely reported task.",
+      "type": "empirical_result",
+      "hedging": "asserted",
+      "section": "Experiments",
+      "passage": "For the largest and most widely reported GLUE task, MNLI, BERT obtains a 4.6% absolute accuracy improvement",
+      "evidence": null,
+      "dependencies": [
+        "exp-01"
+      ],
+      "plain_language": "On MNLI — the biggest and best-known GLUE task — BERT alone jumps 4.6 percentage points."
+    },
+    {
+      "id": "exp-03",
+      "statement": "BERT-LARGE significantly outperforms BERT-BASE across all tasks, especially those with very little training data.",
+      "type": "empirical_result",
+      "hedging": "asserted",
+      "section": "Experiments",
+      "passage": "BERT \\(_{\\small \\textsc{LARGE}}\\) significantly outperforms BERT \\(_{\\small \\textsc{BASE}}\\) across all tasks, especially those with very little training data",
+      "evidence": null,
+      "dependencies": [
+        "bert-02"
+      ],
+      "plain_language": "Bigger model beats smaller model everywhere, and the gap is largest on tasks with tiny labeled datasets — where pre-training really pays off."
+    },
+    {
+      "id": "exp-04",
+      "statement": "On SQuAD v1.1, our best BERT system outperforms the top leaderboard entry by +1.5 F1 in ensembling and +1.3 F1 as a single system.",
+      "type": "empirical_result",
+      "hedging": "asserted",
+      "section": "Experiments",
+      "passage": "Our best performing system outperforms the top leaderboard system by +1.5 F1 in ensembling and +1.3 F1 as a single system",
+      "evidence": "Table 1",
+      "dependencies": [
+        "bert-02"
+      ],
+      "plain_language": "On SQuAD 1.1 (reading-comprehension question answering), our best BERT setup beats the former leaderboard champion by 1.3–1.5 F1 points."
+    },
+    {
+      "id": "exp-05",
+      "statement": "On SQuAD v2.0 we observe a +5.1 F1 improvement over the previous best system.",
+      "type": "empirical_result",
+      "hedging": "asserted",
+      "section": "Experiments",
+      "passage": "We observe a +5.1 F1 improvement over the previous best system",
+      "evidence": "Table 2",
+      "dependencies": [
+        "bert-02"
+      ],
+      "plain_language": "On SQuAD 2.0 (which allows unanswerable questions), BERT is 5.1 F1 points ahead of the prior best — a big jump."
+    },
+    {
+      "id": "exp-06",
+      "statement": "On SWAG, BERT-LARGE outperforms the ESIM+ELMo baseline by +27.1% and OpenAI GPT by 8.3%.",
+      "type": "empirical_result",
+      "hedging": "asserted",
+      "section": "Experiments",
+      "passage": "BERT \\(_{\\small \\textsc{LARGE}}\\) outperforms the authors’ baseline ESIM+ELMo system by +27.1% and OpenAI GPT by 8.3%",
+      "evidence": "Table 3",
+      "dependencies": [
+        "bert-02"
+      ],
+      "plain_language": "On SWAG (commonsense sentence completion), BERT-LARGE beats the paper's ELMo baseline by 27 points and GPT by 8.3 points."
+    },
+    {
+      "id": "abl-01",
+      "statement": "Removing next-sentence prediction hurts performance significantly on QNLI, MNLI, and SQuAD 1.1.",
+      "type": "empirical_result",
+      "hedging": "asserted",
+      "section": "Ablation Studies",
+      "passage": "we show that removing NSP hurts performance significantly on QNLI, MNLI, and SQuAD 1.1",
+      "evidence": "Table 4",
+      "dependencies": [
+        "bert-05"
+      ],
+      "plain_language": "Turn off the next-sentence task and scores drop noticeably on three tasks that need sentence-pair reasoning."
+    },
+    {
+      "id": "abl-02",
+      "statement": "A left-to-right (LTR) pre-trained model performs worse than an MLM model on all tasks, with large drops on MRPC and SQuAD.",
+      "type": "empirical_result",
+      "hedging": "asserted",
+      "section": "Ablation Studies",
+      "passage": "The LTR model performs worse than the MLM model on all tasks, with large drops on MRPC and SQuAD",
+      "evidence": "Table 4",
+      "dependencies": [
+        "intro-04"
+      ],
+      "plain_language": "If we pre-train left-to-right (like GPT) instead of masked-LM, every task is worse, and MRPC and SQuAD collapse."
+    },
+    {
+      "id": "abl-03",
+      "statement": "We hypothesize that when a model is fine-tuned directly on downstream tasks with minimal added parameters, even very small downstream datasets benefit from much larger pre-trained representations.",
+      "type": "theoretical_claim",
+      "hedging": "suggested",
+      "section": "Ablation Studies",
+      "passage": "we hypothesize that when the model is fine-tuned directly on the downstream tasks and uses only a very small number of randomly initialized additional parameters, the task-specific models can benefit from the larger, more expressive pre-trained representations even when downstream task data is very small",
+      "evidence": "Table 5",
+      "dependencies": [
+        "exp-03"
+      ],
+      "plain_language": "Earlier work suggested bigger pre-trained models only help when you have lots of fine-tuning data. We think that was a limitation of their feature-based setup — with full fine-tuning, even small datasets benefit from very big pre-trained models."
+    },
+    {
+      "id": "abl-04",
+      "statement": "Using BERT as a frozen feature extractor (concatenating the top four hidden layers) comes within 0.3 F1 of full fine-tuning on NER.",
+      "type": "empirical_result",
+      "hedging": "asserted",
+      "section": "Ablation Studies",
+      "passage": "The best performing method concatenates the token representations from the top four hidden layers of the pre-trained Transformer, which is only 0.3 F1 behind fine-tuning the entire model",
+      "evidence": "Table 6",
+      "dependencies": [],
+      "plain_language": "You don't have to fine-tune BERT end-to-end. Freezing it and using the top layers as features gets you within 0.3 F1 of the full-fine-tuning result on NER."
+    },
+    {
+      "id": "concl-01",
+      "statement": "Our contribution is generalizing rich transfer-learning pre-training findings to deep bidirectional architectures, letting a single pre-trained model tackle a broad set of NLP tasks.",
+      "type": "methodological_claim",
+      "hedging": "asserted",
+      "section": "Conclusion",
+      "passage": "Our major contribution is further generalizing these findings to deep bidirectional architectures, allowing the same pre-trained model to successfully tackle a broad set of NLP tasks",
+      "evidence": null,
+      "dependencies": [
+        "intro-04"
+      ],
+      "plain_language": "The paper's main contribution: show that a single deep bidirectional pre-trained model can be the starting point for many different NLP tasks — just fine-tune it once per task."
+    }
+  ]
+}
