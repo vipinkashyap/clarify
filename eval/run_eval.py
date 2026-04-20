@@ -13,15 +13,53 @@ PAPERS = ROOT / "papers"
 ANNOTATIONS = ROOT / "annotations"
 GENERATED = ROOT / "generated"
 
-MATCH_THRESHOLD = 0.6
+MATCH_THRESHOLD = 0.45
+
+# Common-domain stopwords we don't want to dominate Jaccard overlap.
+_STOP = {
+    "the", "a", "an", "and", "or", "of", "to", "in", "on", "for", "with",
+    "by", "is", "are", "was", "were", "be", "been", "this", "that", "these",
+    "those", "we", "our", "us", "it", "its", "their", "they", "them", "as",
+    "at", "from", "into", "than", "then", "also", "such", "which", "can",
+    "may", "will", "would", "could", "should", "use", "used", "using",
+    "any", "all", "more", "most", "some", "not", "no",
+}
 
 
 def _norm(s: str) -> str:
     return " ".join(s.lower().split())
 
 
+def _content_tokens(s: str) -> set[str]:
+    out: set[str] = set()
+    for tok in _norm(s).split():
+        tok = "".join(c for c in tok if c.isalnum())
+        if len(tok) < 4 or tok in _STOP:
+            continue
+        out.add(tok)
+    return out
+
+
 def _similarity(a: str, b: str) -> float:
-    return SequenceMatcher(None, _norm(a), _norm(b)).ratio()
+    """Match score: max of char-level ratio and content-token Jaccard.
+
+    SequenceMatcher alone is too brittle when the ground-truth annotator
+    legitimately paraphrases (~0.4 on close paraphrases); Jaccard on
+    content words catches those while staying well-behaved on noise.
+    """
+    na, nb = _norm(a), _norm(b)
+    if not na or not nb:
+        return 0.0
+    # Verbatim containment → 1.0
+    if na in nb or nb in na:
+        return 1.0
+    r_char = SequenceMatcher(None, na, nb).ratio()
+    ta, tb = _content_tokens(a), _content_tokens(b)
+    if ta and tb:
+        jaccard = len(ta & tb) / len(ta | tb)
+    else:
+        jaccard = 0.0
+    return max(r_char, jaccard)
 
 
 def _best_match(target: str, candidates: Iterable[dict]) -> tuple[dict | None, float]:
@@ -42,19 +80,34 @@ def _load_claims(path: Path) -> list[dict]:
 
 
 def _arxiv_ids() -> list[str]:
+    """Collect arxiv ids from eval/papers.
+
+    Conventions:
+      - One-file-per-id: a file whose entire name (minus any trailing ".txt")
+        is the arxiv id. Works with dotted ids like "1706.03762" that break
+        pathlib's .suffix heuristic.
+      - List-in-a-file: a *.txt file whose contents are one arxiv id per line.
+    """
     if not PAPERS.exists():
         return []
+
     ids: list[str] = []
     for p in sorted(PAPERS.iterdir()):
-        if p.is_file() and p.suffix in ("", ".txt"):
-            ids.extend(
-                line.strip() for line in p.read_text().splitlines() if line.strip()
-            )
-    # Also accept a simple "one file per id" convention.
-    for p in sorted(PAPERS.iterdir()):
-        if p.is_file() and p.stem and p.stem not in ids and p.suffix in ("", ".txt"):
-            ids.append(p.stem)
-    # Dedupe preserving order
+        if not p.is_file():
+            continue
+        content = p.read_text().strip()
+        # If the file is empty, treat the filename as the id.
+        if not content:
+            name = p.name[:-4] if p.name.endswith(".txt") else p.name
+            ids.append(name)
+            continue
+        # Non-empty file: each line is an id, unless it's a single line that
+        # matches the filename (in which case it's a degenerate "one file per id").
+        for line in content.splitlines():
+            line = line.strip()
+            if line:
+                ids.append(line)
+
     seen: set[str] = set()
     out: list[str] = []
     for i in ids:

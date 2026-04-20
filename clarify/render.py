@@ -1,21 +1,30 @@
 """Server-side rendering: Paper → full HTML document.
 
-No client-side JavaScript is needed to read the paper. KaTeX loads only to
-paint math (the one exception, per SPEC.md). The result is a single HTML
-document the browser can render with HTML + CSS alone.
+Client-side JavaScript is limited to two narrow responsibilities:
+  • KaTeX paints math (doing this in pure HTML would mean MathML, whose
+    quality varies across browsers — the spec explicitly calls for KaTeX).
+  • panel.js drives the claim-detail side panel (click a tinted claim →
+    panel slides in with type, evidence, hedging, dependencies, plain
+    version). A pure-CSS `:target` version would require a hidden panel
+    per claim and bloat the HTML; ~60 lines of JS is cleaner.
 
-Claim annotations: for each claim, we locate its verbatim passage
-(section.text[char_start:char_end]) inside the section's rendered HTML and
-wrap it in a <span class="claim claim-{type}"> that carries both the
+The reading view itself (body, typography, claim annotations, Plain/
+Original toggle) is pure HTML + CSS.
+
+Claim annotations: for each claim we locate its verbatim passage
+(section.text[char_start:char_end]) inside the section's rendered HTML,
+extend the match to respect tag balance and absorb a trailing "." / ",",
+and wrap it in a <span class="claim claim-{type}"> that carries both the
 original passage and (if available) a plain-language rewrite.
 
 The Original / Plain toggle is a pair of hidden radio inputs rendered
-above the <header>; CSS sibling selectors swap the two variants. Zero JS.
+above the <header>; CSS sibling selectors swap the two variants.
 """
 
 from __future__ import annotations
 
 import html
+import json
 import re
 
 from clarify.schema import Claim, Paper
@@ -61,14 +70,25 @@ def _render_claim_span(claim: Claim, matched: str) -> str:
         if claim.plain_language
         else f'<span class="c-plain">{_esc(claim.statement)}</span>'
     )
+    # id="claim-{id}" lets dependency links target a specific claim span.
     return (
-        f'<span class="{cls}" data-claim-id="{_esc(claim.id)}" '
+        f'<span class="{cls}" '
+        f'id="claim-{_esc(claim.id)}" '
+        f'data-claim-id="{_esc(claim.id)}" '
+        f'tabindex="0" '
+        f'role="button" '
         f'title="{_esc(claim.type.value.replace("_", " "))} · {_esc(claim.hedging.value)}">'
         f"{orig}{plain}</span>"
     )
 
 
 _TAG_RE = re.compile(r"<(/?)(\w+)[^>]*?(/?)>")
+_TRAILING_PUNCT = re.compile(r"\s*[.,;](?=\s|$|<)")
+
+
+def _absorb_trailing_punct(html_str: str, end: int) -> int:
+    m = _TRAILING_PUNCT.match(html_str, end)
+    return m.end() if m else end
 
 
 def _balance_slice(html_str: str, start: int, end: int) -> tuple[int, int]:
@@ -122,6 +142,10 @@ def _wrap_claims_in_section(
         if m is None:
             continue
         start, end = _balance_slice(section_html, m.start(), m.end())
+        # Eat a trailing "." / "," / ";" that sits right after the match,
+        # so plain-language swaps don't strand the original sentence's
+        # terminator floating after the span.
+        end = _absorb_trailing_punct(section_html, end)
         ranked.append((start, end, c))
     ranked.sort(key=lambda t: t[0])
 
@@ -219,6 +243,12 @@ def render_paper(paper: Paper, css_href: str = "/static/reader.css") -> str:
         else ""
     )
 
+    # Claims dict for panel.js — safe escape of "</" for inline <script>.
+    claims_payload = {c.id: c.model_dump(mode="json") for c in paper.claims}
+    claims_json = json.dumps(claims_payload, ensure_ascii=False).replace(
+        "</", "<\\/"
+    )
+
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -229,6 +259,8 @@ def render_paper(paper: Paper, css_href: str = "/static/reader.css") -> str:
 <link rel="stylesheet" href="{katex_css}" crossorigin="anonymous" />
 <script defer src="{katex_js}" crossorigin="anonymous"></script>
 <script defer src="{katex_auto}" crossorigin="anonymous" onload="{katex_bootstrap}"></script>
+<script type="application/json" id="claims-data">{claims_json}</script>
+<script defer src="/static/panel.js"></script>
 </head>
 <body>
 <input type="radio" name="mode" id="mode-original" class="mode-toggle" checked>
@@ -250,6 +282,10 @@ def render_paper(paper: Paper, css_href: str = "/static/reader.css") -> str:
   {abstract_block}
   {_render_sections(paper)}
 </main>
+<aside id="panel" hidden aria-label="claim detail">
+  <button class="close" type="button" aria-label="close panel">×</button>
+  <div class="panel-body"></div>
+</aside>
 </body>
 </html>
 """
