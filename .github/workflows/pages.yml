@@ -1,0 +1,72 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install system packages (pandoc + ghostscript)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pandoc ghostscript
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - uses: astral-sh/setup-uv@v3
+
+      - name: Install Clarify
+        run: |
+          uv venv
+          uv pip install -e .
+
+      - name: Cache parsed papers + figures
+        uses: actions/cache@v4
+        with:
+          path: |
+            .cache/parsed
+            .cache/figures
+            .cache/source
+            .cache/clarify.db
+          key: clarify-cache-${{ hashFiles('extractions/*.json', 'clarify/parse.py', 'clarify/figures.py', 'clarify/render.py') }}
+          restore-keys: |
+            clarify-cache-
+
+      - name: Bootstrap (fetch + ingest every paper in extractions/)
+        run: uv run clarify bootstrap
+
+      - name: Regenerate coverage snapshot
+        run: uv run clarify stats --markdown > docs/coverage.md
+
+      - name: Build static site
+        run: uv run clarify build-static dist
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

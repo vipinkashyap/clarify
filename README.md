@@ -68,28 +68,9 @@ This writes `dist/index.html`, one `dist/p/<arxiv_id>.html` per paper, plus `sta
 python -m http.server --directory dist 8001
 ```
 
-All paths are relative, so the same directory deploys to GitHub Pages, Netlify, Vercel, S3 — anywhere static files live. For GitHub Pages, a minimal workflow:
+All paths are relative, so the same directory deploys to GitHub Pages, Netlify, Vercel, S3 — anywhere static files live.
 
-```yaml
-# .github/workflows/pages.yml (not committed yet — enable when you're ready)
-on: { push: { branches: [main] } }
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v3
-      - run: brew install pandoc ghostscript  # or equivalent apt packages
-      - run: uv pip install -e .
-      - run: uv run clarify bootstrap
-      - run: uv run clarify build-static dist
-      - uses: actions/upload-pages-artifact@v3
-        with: { path: dist }
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    steps: [{ uses: actions/deploy-pages@v4 }]
-```
+**GitHub Pages** is wired up: [`.github/workflows/pages.yml`](.github/workflows/pages.yml) builds on every push to `main` (installs pandoc + ghostscript, runs `clarify bootstrap` to fetch/ingest every paper in `extractions/`, regenerates `docs/coverage.md`, builds the static site, deploys). To enable: go to repo **Settings → Pages → Source → "GitHub Actions"**. The site appears at `https://<user>.github.io/<repo>/`.
 
 ## Architecture
 
