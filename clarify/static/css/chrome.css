@@ -1,0 +1,70 @@
+/* ── Errors / empty state ─────────────────────────────────────────────── */
+
+.error {
+  padding: 2em;
+  color: var(--muted);
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.6;
+  max-width: 62ch;
+  margin: 4em auto;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  background: #fff;
+}
+.error code {
+  font-family: var(--mono);
+  background: color-mix(in srgb, var(--fg) 6%, transparent);
+  padding: 0.1em 0.3em;
+  border-radius: 3px;
+  font-size: 0.95em;
+}
+
+/* ── Selection ────────────────────────────────────────────────────────── */
+
+::selection {
+  background: color-mix(in srgb, var(--link) 22%, transparent);
+}
+
+/* ── Header extras (nav links + claim-type legend) ────────────────────── */
+
+header .brand, header .back {
+  color: var(--fg);
+  text-decoration: none;
+}
+header .back {
+  color: var(--muted);
+  font-size: 0.93em;
+  margin-left: 0.6em;
+}
+header .back:hover { color: var(--fg); }
+
+.legend {
+  display: inline-flex;
+  gap: 0.9em;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--muted);
+  font-size: 0.88em;
+  font-feature-settings: "tnum" 1, "lnum" 1;
+}
+.legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  white-space: nowrap;
+}
+.legend .swatch {
+  width: 0.7em;
+  height: 0.7em;
+  border-radius: 2px;
+  display: inline-block;
+}
+.legend .swatch.claim-empirical_result      { background: var(--claim-empirical-accent); }
+.legend .swatch.claim-methodological_claim  { background: var(--claim-methodological-accent); }
+.legend .swatch.claim-theoretical_claim     { background: var(--claim-theoretical-accent); }
+.legend .swatch.claim-background_claim      { background: var(--claim-background-accent); }
+.legend .swatch.claim-limitation            { background: var(--claim-limitation-accent); }
+.legend .count { color: var(--fg); font-weight: 500; }
+

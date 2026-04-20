@@ -18,8 +18,7 @@ from pathlib import Path
 from typing import Iterable
 
 from clarify import cache
-from clarify.main import render_index
-from clarify.render import render_paper
+from clarify.render import render_index, render_paper
 
 
 _PKG_STATIC = Path(__file__).parent / "static"

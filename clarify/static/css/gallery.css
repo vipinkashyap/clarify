@@ -1,0 +1,235 @@
+/* ── Index page (paper gallery) ───────────────────────────────────────── */
+
+body.index main {
+  max-width: 1180px;
+  margin: 4em auto 6em;
+  padding: 0 2em;
+}
+
+header .header-go {
+  display: inline-flex;
+}
+header .header-go input {
+  font: inherit;
+  font-family: var(--mono);
+  font-size: 13px;
+  padding: 0.35em 0.7em;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--fg);
+  width: 14em;
+}
+header .header-go input::placeholder { color: var(--muted); }
+header .header-go input:focus {
+  outline: none;
+  border-color: var(--link);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--link) 14%, transparent);
+}
+
+body.index .hero {
+  max-width: 56ch;
+  margin: 2.2em 0 5em;
+  hyphens: manual;
+  -webkit-hyphens: manual;
+}
+body.index .hero h1 {
+  font-size: clamp(2.2em, 4.5vw, 3.6em);
+  font-weight: 600;
+  line-height: 1.04;
+  margin: 0 0 0.6em;
+  letter-spacing: -0.02em;
+  hyphens: manual;
+  -webkit-hyphens: manual;
+  word-wrap: normal;
+}
+body.index .hero h1 em {
+  font-style: italic;
+  font-weight: 500;
+  color: var(--link);
+}
+body.index .hero .lede {
+  color: #4e4a3f;
+  font-size: 1.08em;
+  line-height: 1.55;
+  max-width: 56ch;
+  margin: 0;
+  font-feature-settings: "liga" 1, "calt" 1;
+  hyphens: manual;
+  -webkit-hyphens: manual;
+}
+
+.search-row {
+  display: flex;
+  align-items: baseline;
+  gap: 1em;
+  margin: 0 0 1.4em;
+}
+.search-input {
+  flex: 1;
+  max-width: 36em;
+  font: inherit;
+  font-family: var(--sans);
+  font-size: 15px;
+  padding: 0.6em 1em;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--fg);
+}
+.search-input::placeholder { color: var(--muted); }
+.search-input:focus {
+  outline: none;
+  border-color: var(--link);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--link) 14%, transparent);
+}
+.search-count {
+  font-family: var(--sans);
+  font-size: 13px;
+  color: var(--muted);
+  font-feature-settings: "tnum" 1, "lnum" 1;
+}
+
+.paper-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.6em;
+  margin: 2em 0 4em;
+}
+
+.paper-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7em;
+  background: #fff;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  padding: 1.5em 1.5em 1.2em;
+  color: var(--fg);
+  text-decoration: none;
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+  position: relative;
+}
+.paper-card:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--fg) 20%, var(--rule));
+  box-shadow: 0 10px 30px rgba(40, 35, 20, 0.06);
+}
+.paper-card .card-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5em;
+}
+.paper-card .card-id {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.paper-card .card-cat {
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 500;
+  padding: 0.15em 0.55em;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--link) 9%, transparent);
+  color: var(--link);
+  letter-spacing: 0.02em;
+}
+.paper-card .card-title {
+  font-size: 1.2em;
+  font-weight: 600;
+  line-height: 1.25;
+  margin: 0;
+  letter-spacing: -0.005em;
+}
+.paper-card .card-authors {
+  font-size: 0.88em;
+  color: var(--muted);
+  font-style: italic;
+  line-height: 1.4;
+}
+.paper-card .et-al {
+  font-style: normal;
+  font-feature-settings: "tnum" 1, "lnum" 1;
+}
+.paper-card .card-hero {
+  margin: 0.6em 0 0.2em;
+  padding: 0 0 0 0.85em;
+  border-left: 2px solid color-mix(in srgb, var(--link) 55%, var(--rule));
+  font-family: var(--serif);
+  font-size: 15px;
+  line-height: 1.55;
+  color: #39352d;
+  font-style: italic;
+  /* Clamp to ~3 lines so cards stay regular-height. */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.paper-card .card-foot {
+  margin-top: auto;
+  padding-top: 1em;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px dashed color-mix(in srgb, var(--rule) 75%, transparent);
+}
+.paper-card .card-chips {
+  display: inline-flex;
+  gap: 0.3em;
+  font-family: var(--sans);
+  font-size: 11px;
+  font-feature-settings: "tnum" 1, "lnum" 1;
+}
+.paper-card .chip {
+  padding: 0.15em 0.5em;
+  border-radius: 999px;
+  background: var(--claim-tint);
+  color: color-mix(in srgb, var(--claim-color) 80%, var(--fg));
+  font-weight: 500;
+  box-shadow: inset 1.5px 0 0 var(--claim-color);
+}
+.paper-card .chip-empty {
+  background: transparent;
+  box-shadow: none;
+  color: var(--muted);
+  font-style: italic;
+  font-weight: 400;
+}
+.paper-card .card-cta {
+  font-family: var(--sans);
+  font-size: 12.5px;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+  transition: color 180ms ease, transform 180ms ease;
+}
+.paper-card:hover .card-cta {
+  color: var(--link);
+  transform: translateX(2px);
+}
+
+.hint {
+  color: var(--muted);
+  font-family: var(--sans);
+  font-size: 0.87em;
+  line-height: 1.6;
+  text-indent: 0;
+  max-width: 60ch;
+  margin-top: 3em;
+}
+.hint code {
+  font-family: var(--mono);
+  background: color-mix(in srgb, var(--fg) 6%, transparent);
+  padding: 0.1em 0.3em;
+  border-radius: 3px;
+  font-size: 0.92em;
+}
+.empty {
+  color: var(--muted);
+  font-style: italic;
+  font-size: 1em;
+  padding: 2em 0;
+}

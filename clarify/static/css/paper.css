@@ -1,0 +1,303 @@
+/* ── Paper column ─────────────────────────────────────────────────────── */
+
+main {
+  max-width: 68ch;
+  margin: 5em auto 8em;
+  padding: 0 1.5em;
+  transition: transform 200ms ease-out, margin-right 200ms ease-out;
+}
+main > section {
+  margin-top: 3.2em;
+}
+main > section:first-of-type { margin-top: 2.2em; }
+main > section > h2,
+main > section > h3 {
+  margin-top: 0;
+}
+main > h1 {
+  font-size: 2.25em;
+  font-weight: 600;
+  line-height: 1.15;
+  margin: 0 0 0.3em;
+  letter-spacing: -0.01em;
+  hyphens: manual;
+}
+main > .authors {
+  color: var(--muted);
+  font-style: italic;
+  font-size: 1em;
+  margin-bottom: 2em;
+}
+main > .abstract {
+  padding-inline: 2em;
+  font-style: italic;
+  margin: 2em 0 2.5em;
+}
+main > .abstract .label {
+  display: block;
+  margin-bottom: 0.3em;
+  font-variant-caps: small-caps;
+  font-feature-settings: "smcp" 1, "onum" 0, "lnum" 1;
+  font-style: normal;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  font-size: 0.95em;
+}
+
+main h2 {
+  font-size: 1.5em;
+  font-weight: 600;
+  margin: 2em 0 0.5em;
+  letter-spacing: -0.005em;
+}
+main h3 {
+  font-size: 1.2em;
+  font-weight: 600;
+  font-style: italic;
+  margin: 1.6em 0 0.4em;
+}
+main h4, main h5, main h6 {
+  font-size: 1em;
+  font-weight: 600;
+  margin: 1.4em 0 0.3em;
+}
+
+main p { margin: 0; text-indent: 1.25em; }
+main h1 + p, main h2 + p, main h3 + p, main h4 + p,
+main .abstract + p, main > p:first-of-type,
+main section > p:first-of-type,
+main blockquote + p, main figure + p, main ul + p, main ol + p, main table + p,
+main .katex-display + p {
+  text-indent: 0;
+}
+
+main a {
+  color: var(--link);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--link) 40%, transparent);
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1px;
+}
+main a:hover {
+  text-decoration-color: var(--link);
+}
+
+main strong { font-weight: 600; }
+main em { font-style: italic; }
+
+main code, main pre {
+  font-family: var(--mono);
+  font-size: 0.88em;
+  font-feature-settings: "liga" 0, "calt" 0;
+}
+main code {
+  background: color-mix(in srgb, var(--fg) 6%, transparent);
+  padding: 0.08em 0.3em;
+  border-radius: 3px;
+}
+main pre {
+  background: color-mix(in srgb, var(--fg) 5%, transparent);
+  padding: 1em 1.2em;
+  border-radius: 4px;
+  overflow-x: auto;
+  line-height: 1.45;
+}
+main pre code { background: none; padding: 0; }
+
+main blockquote {
+  border-left: 2px solid var(--rule);
+  margin: 1em 0;
+  padding-left: 1em;
+  color: var(--muted);
+  font-style: italic;
+}
+
+/* Lists — not indented, sane spacing. */
+main ul, main ol {
+  padding-left: 1.5em;
+  margin: 0.8em 0;
+}
+main li + li { margin-top: 0.25em; }
+main li > p { text-indent: 0; }
+
+/* ── Figures ──────────────────────────────────────────────────────────── */
+
+main figure {
+  margin: 2em 0;
+  text-align: center;
+}
+main figure img { max-width: 100%; height: auto; }
+main figure figcaption {
+  margin-top: 0.6em;
+  font-size: 0.9em;
+  font-style: italic;
+  color: var(--muted);
+  max-width: 60ch;
+  margin-inline: auto;
+}
+
+/* Plain-language gloss — shown by default (Plain mode). Warm, inviting,
+   a beat more prominent than the authors' caption. */
+main figure .fig-plain {
+  display: block;
+  margin: 0.7em auto 0;
+  max-width: 60ch;
+  font-family: var(--serif);
+  font-size: 15.5px;
+  line-height: 1.55;
+  color: #3a362d;
+  text-align: left;
+  padding: 0.7em 1em;
+  background: color-mix(in srgb, var(--link) 6%, transparent);
+  border-left: 2px solid color-mix(in srgb, var(--link) 60%, transparent);
+  border-radius: 0 4px 4px 0;
+}
+
+/* Hide the authors' figcaption by default; Plain mode leads with the gloss */
+main figure.has-gloss .fig-original { display: none; }
+
+/* When Original mode is active, flip: hide the plain gloss, show the authors' caption */
+#mode-original:checked ~ main figure .fig-plain { display: none; }
+#mode-original:checked ~ main figure.has-gloss .fig-original { display: block; }
+
+/* caption_override: a plain-English replacement for the authors' caption.
+   Shown in Plain mode alongside the .fig-plain lede, hidden in Original. */
+main figure .fig-override {
+  margin-top: 0.5em;
+  font-size: 0.88em;
+  font-style: italic;
+  color: var(--muted);
+  max-width: 60ch;
+  margin-inline: auto;
+}
+#mode-original:checked ~ main figure .fig-override { display: none; }
+
+/* ── Tables (booktabs) ────────────────────────────────────────────────── */
+
+main table {
+  border-collapse: collapse;
+  margin: 1.4em auto;
+  font-feature-settings: "tnum" 1, "lnum" 1;
+  font-size: 0.95em;
+}
+main table th, main table td {
+  padding: 0.45em 0.8em;
+  text-align: left;
+  border: 0;
+}
+main table thead tr {
+  border-top: 1.5px solid var(--fg);
+  border-bottom: 1px solid var(--fg);
+}
+main table tbody tr:last-child {
+  border-bottom: 1.5px solid var(--fg);
+}
+main table caption {
+  caption-side: top;
+  font-size: 0.9em;
+  font-style: italic;
+  color: var(--muted);
+  margin-bottom: 0.5em;
+}
+
+/* ── Math ─────────────────────────────────────────────────────────────── */
+
+.katex { font-size: 1.02em; }
+
+/* Display equations may be wider than the body's 68ch measure (matrices,
+   long aligns). Let them break out of the column up to viewport width,
+   center them, and scroll horizontally with a thin visible scrollbar
+   when they're still too wide. */
+main .katex-display {
+  margin: 1.4em -1em;            /* a bit of bleed past the column */
+  padding: 0.2em 1em;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--rule) transparent;
+}
+main .katex-display::-webkit-scrollbar { height: 6px; }
+main .katex-display::-webkit-scrollbar-thumb {
+  background: var(--rule);
+  border-radius: 3px;
+}
+main .katex-display > .katex { text-align: center; }
+
+/* ── References (hanging indent) ──────────────────────────────────────── */
+
+main section#references, main section.references,
+main div.references, main #refs {
+  font-size: 0.95em;
+}
+main #refs div, main .references p, main section#references p {
+  text-indent: -1.5em;
+  padding-left: 1.5em;
+  margin: 0.5em 0;
+}
+
+/* ── Claim annotations ────────────────────────────────────────────────── */
+
+.claim {
+  /* Inline, unobtrusive but visible enough that a non-expert can see
+     'this sentence is a claim of type X' at a glance. Tints are already
+     very pale; we use them at full opacity so they actually register. */
+  display: inline;
+  padding: 0.05em 0.2em 0.05em 0.35em;
+  border-radius: 2px;
+  box-shadow: inset 2px 0 0 var(--claim-color, var(--fg));
+  background: var(--claim-tint, transparent);
+  transition: background 150ms ease, box-shadow 150ms ease;
+}
+.claim-empirical_result      { --claim-color: var(--claim-empirical-accent);      --claim-tint: var(--claim-empirical-tint); }
+.claim-methodological_claim  { --claim-color: var(--claim-methodological-accent); --claim-tint: var(--claim-methodological-tint); }
+.claim-theoretical_claim     { --claim-color: var(--claim-theoretical-accent);    --claim-tint: var(--claim-theoretical-tint); }
+.claim-background_claim      { --claim-color: var(--claim-background-accent);     --claim-tint: var(--claim-background-tint); }
+.claim-limitation            { --claim-color: var(--claim-limitation-accent);     --claim-tint: var(--claim-limitation-tint); }
+
+.claim:hover {
+  background: color-mix(in srgb, var(--claim-color) 18%, var(--claim-tint));
+  box-shadow: inset 3px 0 0 var(--claim-color, var(--fg));
+}
+
+/* Plain is the default. Original shows only when its radio is checked.
+   Defaulting to Plain helps a non-expert reader land on the distilled
+   experience; technical readers get the toggle. */
+.claim .c-plain { display: inline; }
+.claim .c-original { display: none; }
+
+/* ── Plain / Original toggle (CSS-only) ───────────────────────────────── */
+
+.mode-toggle {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.mode-switch {
+  display: inline-flex;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--bg);
+}
+.mode-switch label {
+  font: inherit;
+  padding: 0.4em 0.9em;
+  cursor: pointer;
+  user-select: none;
+  transition: background 150ms ease, color 150ms ease;
+  color: var(--fg);
+}
+.mode-switch label + label { border-left: 1px solid var(--rule); }
+
+#mode-original:checked ~ header .mode-switch label[for="mode-original"],
+#mode-plain:checked    ~ header .mode-switch label[for="mode-plain"] {
+  background: var(--fg);
+  color: var(--bg);
+}
+
+/* Plain is the default (see .claim rules above). The Original radio, when
+   checked, swaps the content. */
+#mode-original:checked ~ main .claim .c-original { display: inline; }
+#mode-original:checked ~ main .claim .c-plain    { display: none; }
+

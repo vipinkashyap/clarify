@@ -35,6 +35,26 @@ from clarify.schema import Claim, FigureGloss, Paper
 
 KATEX_VERSION = "0.16.11"
 
+TYPE_LABELS = {
+    "empirical_result": "Empirical",
+    "methodological_claim": "Methodological",
+    "theoretical_claim": "Theoretical",
+    "background_claim": "Background",
+    "limitation": "Limitation",
+}
+TYPE_ORDER = list(TYPE_LABELS.keys())
+
+CATEGORY_LABELS = {
+    "cs.CL": "NLP",
+    "cs.CV": "Vision",
+    "cs.LG": "ML",
+    "cs.AI": "AI",
+    "cs.NE": "Neural",
+    "stat.ML": "ML",
+    "cs.RO": "Robotics",
+    "cs.IR": "IR",
+}
+
 
 def _esc(s: str) -> str:
     return html.escape(s, quote=True)
@@ -365,3 +385,174 @@ def render_paper(paper: Paper, css_href: str = "/static/reader.css") -> str:
 </body>
 </html>
 """
+
+
+# ── Index / gallery renderer ──────────────────────────────────────────────
+
+
+def _paper_card(paper: Paper, base_path: str = "/paper/") -> str:
+    arxiv_id = _esc(paper.arxiv_id)
+    title = _esc(paper.title)
+    authors = paper.authors or []
+    author_text = ", ".join(_esc(a) for a in authors[:3])
+    if len(authors) > 3:
+        author_text += f', <span class="et-al">+{len(authors) - 3}</span>'
+
+    by_type: dict[str, int] = {}
+    for c in paper.claims:
+        by_type[c.type.value] = by_type.get(c.type.value, 0) + 1
+    chips = []
+    for key in TYPE_ORDER:
+        if key in by_type:
+            chips.append(
+                f'<span class="chip claim-{key}" title="{_esc(TYPE_LABELS[key])}">'
+                f"{by_type[key]}</span>"
+            )
+    chips_html = (
+        "".join(chips)
+        if chips
+        else '<span class="chip chip-empty">no claims yet</span>'
+    )
+
+    hero = ""
+    for c in paper.claims:
+        if c.plain_language and c.type.value in (
+            "empirical_result",
+            "methodological_claim",
+        ):
+            hero = c.plain_language
+            break
+    if not hero:
+        for c in paper.claims:
+            if c.plain_language:
+                hero = c.plain_language
+                break
+    hero_html = (
+        f'<blockquote class="card-hero">{_esc(hero)}</blockquote>' if hero else ""
+    )
+
+    cat = paper.primary_category
+    cat_label = CATEGORY_LABELS.get(cat, cat) if cat else None
+    cat_html = (
+        f'<span class="card-cat" data-cat="{_esc(cat or "")}">'
+        f'{_esc(cat_label or "")}</span>'
+        if cat_label
+        else ""
+    )
+
+    haystack = " ".join(
+        [paper.arxiv_id, paper.title, " ".join(authors), cat or "", cat_label or ""]
+    ).lower()
+    haystack = _esc(haystack)
+
+    return (
+        f'<a class="paper-card" href="{base_path}{arxiv_id}" data-search="{haystack}">'
+        f'  <div class="card-meta">'
+        f'    <span class="card-id">{arxiv_id}</span>'
+        f"    {cat_html}"
+        f"  </div>"
+        f'  <h2 class="card-title">{title}</h2>'
+        f'  <div class="card-authors">{author_text}</div>'
+        f"  {hero_html}"
+        f'  <div class="card-foot">'
+        f'    <div class="card-chips">{chips_html}</div>'
+        f'    <span class="card-cta">Read →</span>'
+        f"  </div>"
+        f"</a>"
+    )
+
+
+_INDEX_SEARCH_JS = """
+<script>
+(() => {
+  const input = document.getElementById('search');
+  const grid = document.getElementById('paper-grid');
+  const count = document.getElementById('search-count');
+  if (!input || !grid) return;
+  const cards = [...grid.querySelectorAll('.paper-card')];
+  const total = cards.length;
+  const updateCount = (n) => {
+    if (!count) return;
+    count.textContent = n === total ? '' : `${n} of ${total}`;
+  };
+  input.addEventListener('input', () => {
+    const q = input.value.trim().toLowerCase();
+    let visible = 0;
+    for (const c of cards) {
+      const hay = c.dataset.search || '';
+      const match = !q || hay.includes(q);
+      c.style.display = match ? '' : 'none';
+      if (match) visible++;
+    }
+    updateCount(visible);
+  });
+})();
+</script>
+""".strip()
+
+
+def render_index(
+    papers: list[Paper],
+    *,
+    css_href: str = "/static/reader.css",
+    paper_base: str = "/paper/",
+    show_header_form: bool = True,
+) -> str:
+    """Gallery / landing page. Used by both the runtime server and build-static.
+
+    `paper_base` lets the same renderer emit `/paper/<id>` for the FastAPI
+    route or `p/<id>.html` for the static-site layout.
+    """
+    if papers:
+        cards = "\n".join(_paper_card(p, base_path=paper_base) for p in papers)
+        listing = f'<div class="paper-grid" id="paper-grid">{cards}</div>'
+    else:
+        listing = '<p class="empty">No papers ingested yet.</p>'
+
+    header_form = (
+        '<form action="/go" method="get" class="header-go">'
+        '<input type="text" name="id" placeholder="Open by arxiv id" aria-label="arxiv id">'
+        "</form>"
+        if show_header_form
+        else ""
+    )
+
+    search_block = (
+        '<div class="search-row">'
+        '<input type="search" id="search" class="search-input" '
+        'placeholder="Search titles, authors, categories…" autocomplete="off" '
+        'aria-label="filter papers">'
+        '<div class="search-count" id="search-count" aria-live="polite"></div>'
+        "</div>"
+        if papers
+        else ""
+    )
+
+    return f"""<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><title>Clarify</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="{css_href}">
+</head><body class="index">
+<header>
+  <span class="brand">Clarify</span>
+  <span class="title">A reading overlay for arxiv papers</span>
+  <span class="spacer"></span>
+  {header_form}
+</header>
+<main>
+  <section class="hero">
+    <h1>Read papers<br><em>in plain English.</em></h1>
+    <p class="lede">Clarify is a reading overlay for arxiv papers — it surfaces the load-bearing
+      claims inline, with a plain-language rewrite for each one. Click a claim to see the evidence,
+      the hedging, and what it builds on.</p>
+  </section>
+  {search_block}
+  {listing}
+  <p class="hint">
+    Add a paper: in Claude Code, say <em>"extract claims from &lt;arxiv id&gt;"</em>,
+    or follow <a href="https://github.com/vipinkashyap/clarify/blob/main/docs/extract-prompt.md">docs/extract-prompt.md</a>.
+  </p>
+</main>
+{_INDEX_SEARCH_JS}
+</body></html>"""
