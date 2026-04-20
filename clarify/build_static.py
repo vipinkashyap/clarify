@@ -60,6 +60,11 @@ def build(dist: Path, arxiv_ids: Iterable[str] | None = None) -> dict:
     figures_src = cache.cache_dir() / "figures"
     figures_copied = _copy_tree(figures_src, dist / "figures")
 
+    # 2b. Discover payload (committed; gallery loads it client-side)
+    discover_src = Path(__file__).resolve().parents[1] / "docs" / "discover.json"
+    if discover_src.exists():
+        shutil.copy2(discover_src, dist / "discover.json")
+
     # 3. Paper pages
     rows = cache.list_papers()
     if arxiv_ids is not None:

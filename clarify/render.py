@@ -465,27 +465,88 @@ def _paper_card(paper: Paper, base_path: str = "/paper/") -> str:
 _INDEX_SEARCH_JS = """
 <script>
 (() => {
+  const REPO = 'vipinkashyap/clarify';
+
+  // ── Search over extracted cards ────────────────────────────────────────
   const input = document.getElementById('search');
   const grid = document.getElementById('paper-grid');
   const count = document.getElementById('search-count');
-  if (!input || !grid) return;
-  const cards = [...grid.querySelectorAll('.paper-card')];
-  const total = cards.length;
-  const updateCount = (n) => {
-    if (!count) return;
-    count.textContent = n === total ? '' : `${n} of ${total}`;
+  if (input && grid) {
+    const cards = [...grid.querySelectorAll('.paper-card')];
+    const total = cards.length;
+    const updateCount = (n) => { if (count) count.textContent = n === total ? '' : `${n} of ${total}`; };
+    input.addEventListener('input', () => {
+      const q = input.value.trim().toLowerCase();
+      let visible = 0;
+      for (const c of cards) {
+        const hay = c.dataset.search || '';
+        const match = !q || hay.includes(q);
+        c.style.display = match ? '' : 'none';
+        if (match) visible++;
+      }
+      updateCount(visible);
+    });
+  }
+
+  // ── Discover: pre-fetched arxiv previews, lazy-loaded ──────────────────
+  const host = document.getElementById('discover-groups');
+  if (!host) return;
+
+  const escapeHtml = (s) => String(s).replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[c]));
+
+  const requestUrl = (arxivId, title) => {
+    const q = new URLSearchParams({
+      template: 'request-paper.md',
+      title: `[Request] ${title}`,
+      body: `**arxiv id:** ${arxivId}\\n\\n**Title:** ${title}\\n\\n**Why this matters** (1–2 sentences):`,
+    });
+    return `https://github.com/${REPO}/issues/new?${q.toString()}`;
   };
-  input.addEventListener('input', () => {
-    const q = input.value.trim().toLowerCase();
-    let visible = 0;
-    for (const c of cards) {
-      const hay = c.dataset.search || '';
-      const match = !q || hay.includes(q);
-      c.style.display = match ? '' : 'none';
-      if (match) visible++;
-    }
-    updateCount(visible);
-  });
+
+  const renderCard = (p) => {
+    const authors = (p.authors || []).slice(0, 3).join(', ');
+    const more = p.authors && p.authors.length > 3 ? `, <span class="et-al">+${p.authors.length - 3}</span>` : '';
+    const summary = (p.summary || '').slice(0, 260);
+    const truncated = (p.summary || '').length > 260;
+    const ingested = p.ingested;
+    const action = ingested
+      ? `<a class="card-cta" href="p/${encodeURIComponent(p.arxiv_id)}.html">Read →</a>`
+      : `<a class="card-request" href="${requestUrl(p.arxiv_id, p.title)}" target="_blank" rel="noopener">Request →</a>`;
+    return `
+      <div class="preview-card ${ingested ? 'is-ingested' : ''}">
+        <div class="card-meta">
+          <span class="card-id">${escapeHtml(p.arxiv_id)}</span>
+          ${p.primary_category ? `<span class="card-cat">${escapeHtml(p.primary_category)}</span>` : ''}
+        </div>
+        <h3 class="card-title">${escapeHtml(p.title)}</h3>
+        <div class="card-authors">${escapeHtml(authors)}${more}</div>
+        <p class="card-summary">${escapeHtml(summary)}${truncated ? '…' : ''}</p>
+        <div class="card-foot">${action}</div>
+      </div>
+    `;
+  };
+
+  const renderGroup = (g) => `
+    <section class="discover-group">
+      <h3 class="group-label">${escapeHtml(g.label)} <span class="group-code">${escapeHtml(g.code)}</span></h3>
+      <div class="preview-grid">${g.papers.map(renderCard).join('')}</div>
+    </section>
+  `;
+
+  fetch('discover.json', { cache: 'default' })
+    .then(r => r.ok ? r.json() : null)
+    .then(data => {
+      if (!data || !data.groups) return;
+      host.innerHTML = data.groups.map(renderGroup).join('');
+      const ts = document.getElementById('discover-timestamp');
+      if (ts && data.generated_at) {
+        const d = new Date(data.generated_at);
+        ts.textContent = `updated ${d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}`;
+      }
+    })
+    .catch(() => { /* no discover data; section stays empty, no UX harm */ });
 })();
 </script>
 """.strip()
@@ -549,6 +610,16 @@ def render_index(
   </section>
   {search_block}
   {listing}
+  <section class="discover">
+    <div class="discover-head">
+      <h2>More from arxiv</h2>
+      <span id="discover-timestamp" class="discover-timestamp"></span>
+    </div>
+    <p class="discover-lede">Recent papers in the categories Clarify already covers.
+      Not extracted yet — if one's worth reading, click <em>Request</em> to file an issue
+      and someone from the contributor paths below can pick it up.</p>
+    <div class="discover-groups" id="discover-groups"></div>
+  </section>
   <p class="hint">
     Add a paper: in Claude Code, say <em>"extract claims from &lt;arxiv id&gt;"</em>,
     or follow <a href="https://github.com/vipinkashyap/clarify/blob/main/docs/extract-prompt.md">docs/extract-prompt.md</a>.

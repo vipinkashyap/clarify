@@ -9,7 +9,7 @@ import html as _html
 from pathlib import Path
 
 from fastapi import FastAPI
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
 from clarify import cache
@@ -19,8 +19,21 @@ from clarify.render import render_index, render_paper
 
 STATIC_DIR = Path(__file__).parent / "static"
 FIGURES_DIR = cache_dir() / "figures"
+DISCOVER_JSON = Path(__file__).resolve().parents[1] / "docs" / "discover.json"
 
 app = FastAPI(title="Clarify")
+
+
+@app.get("/discover.json")
+def discover_json() -> FileResponse:
+    if DISCOVER_JSON.exists():
+        return FileResponse(DISCOVER_JSON, media_type="application/json")
+    # No discover file yet — empty payload keeps the gallery's section graceful.
+    import json as _json
+    return HTMLResponse(
+        _json.dumps({"generated_at": None, "groups": []}),
+        media_type="application/json",
+    )
 
 
 @app.get("/", response_class=HTMLResponse)

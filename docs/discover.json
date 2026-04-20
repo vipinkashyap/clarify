@@ -1,0 +1,534 @@
+{
+  "generated_at": "2026-04-20T20:05:48+00:00",
+  "groups": [
+    {
+      "code": "cs.CL",
+      "label": "NLP",
+      "papers": [
+        {
+          "arxiv_id": "2604.16278",
+          "title": "Learning to Reason with Insight for Informal Theorem Proving",
+          "authors": [
+            "Yunhe Li",
+            "Hao Shi",
+            "Bowen Deng",
+            "Wei Wang",
+            "Mengzhe Ruan",
+            "Hanxu Hou"
+          ],
+          "summary": "Although most of the automated theorem-proving approaches depend on formal proof systems, informal theorem proving can align better with large language models' (LLMs) strength in natural language processing. In this work, we identify a primary bottleneck in informal theorem proving as a lack of insight, namely the difficulty of recognizing the core techniques required to solve complex problems. To address this, we propose a novel framework designed to cultivate this essential reasoning skill and enable LLMs to perform insightful reasoning. We propose $\\mathtt{DeepInsightTheorem}$, a hierarchical dataset that structures informal proofs by explicitly extracting core techniques and proof sketches alongside the final proof. To fully exploit this dataset, we design a Progressive Multi-Stage SFT strategy that mimics the human learning process, guiding the model from basic proof writing to insightful thinking. Our experiments on challenging mathematical benchmarks demonstrate that this insight-aware generation strategy significantly outperforms baselines. These results demonstrate that teaching models to identify and apply core techniques can substantially improve their mathematical reasoning.",
+          "primary_category": "cs.AI",
+          "published": "2026-04-17T17:36:21+00:00",
+          "ingested": false
+        },
+        {
+          "arxiv_id": "2604.16275",
+          "title": "No Universal Courtesy: A Cross-Linguistic, Multi-Model Study of Politeness Effects on LLMs Using the PLUM Corpus",
+          "authors": [
+            "Hitesh Mehta",
+            "Arjit Saxena",
+            "Garima Chhikara",
+            "Rohit Kumar"
+          ],
+          "summary": "This paper explores the response of Large Language Models (LLMs) to user prompts with different degrees of politeness and impoliteness. The Politeness Theory by Brown and Levinson and the Impoliteness Framework by Culpeper form the basis of experiments conducted across three languages (English, Hindi, Spanish), five models (Gemini-Pro, GPT-4o Mini, Claude 3.7 Sonnet, DeepSeek-Chat, and Llama 3), and three interaction histories between users (raw, polite, and impolite). Our sample consists of 22,500 pairs of prompts and responses of various types, evaluated across five levels of politeness using an eight-factor assessment framework: coherence, clarity, depth, responsiveness, context retention, toxicity, conciseness, and readability. The findings show that model performance is highly influenced by tone, dialogue history, and language. While polite prompts enhance the average response quality by up to ~11% and impolite tones worsen it, these effects are neither consistent nor universal across languages and models. English is best served by courteous or direct tones, Hindi by deferential and indirect tones, and Spanish by assertive tones. Among the models, Llama is the most tone-sensitive (11.5% range), whereas GPT is more robust to adversarial tone. These results indicate that politeness is a quantifiable computational variable that affects LLM behaviour, though its impact is language- and model-dependent rather than universal. To support reproducibility and future work, we additionally release PLUM (Politeness Levels in Utterances, Multilingual), a publicly available corpus of 1,500 human-validated prompts across three languages and five politeness categories, and provide a formal supplementary analysis of six falsifiable hypotheses derived from politeness theory, empirically assessed against the dataset.",
+          "primary_category": "cs.CL",
+          "published": "2026-04-17T17:33:48+00:00",
+          "ingested": false
+        },
+        {
+          "arxiv_id": "2604.16272",
+          "title": "VEFX-Bench: A Holistic Benchmark for Generic Video Editing and Visual Effects",
+          "authors": [
+            "Xiangbo Gao",
+            "Sicong Jiang",
+            "Bangya Liu",
+            "Xinghao Chen",
+            "Minglai Yang",
+            "Siyuan Yang"
+          ],
+          "summary": "As AI-assisted video creation becomes increasingly practical, instruction-guided video editing has become essential for refining generated or captured footage to meet professional requirements. Yet the field still lacks both a large-scale human-annotated dataset with complete editing examples and a standardized evaluator for comparing editing systems. Existing resources are limited by small scale, missing edited outputs, or the absence of human quality labels, while current evaluation often relies on expensive manual inspection or generic vision-language model judges that are not specialized for editing quality. We introduce VEFX-Dataset, a human-annotated dataset containing 5,049 video editing examples across 9 major editing categories and 32 subcategories, each labeled along three decoupled dimensions: Instruction Following, Rendering Quality, and Edit Exclusivity. Building on VEFX-Dataset, we propose VEFX-Reward, a reward model designed specifically for video editing quality assessment. VEFX-Reward jointly processes the source video, the editing instruction, and the edited video, and predicts per-dimension quality scores via ordinal regression. We further release VEFX-Bench, a benchmark of 300 curated video-prompt pairs for standardized comparison of editing systems. Experiments show that VEFX-Reward aligns more strongly with human judgments than generic VLM judges and prior reward models on both standard IQA/VQA metrics and group-wise preference evaluation. Using VEFX-Reward as an evaluator, we benchmark representative commercial and open-source video editing systems, revealing a persistent gap between visual plausibility, instruction following, and edit locality in current models.",
+          "primary_category": "cs.CV",
+          "published": "2026-04-17T17:28:24+00:00",
+          "ingested": false
+        },
+        {
+          "arxiv_id": "2604.16270",
+          "title": "From Benchmarking to Reasoning: A Dual-Aspect, Large-Scale Evaluation of LLMs on Vietnamese Legal Text",
+          "authors": [
+            "Van-Truong Le"
+          ],
+          "summary": "The complexity of Vietnam's legal texts presents a significant barrier to public access to justice. While Large Language Models offer a promising solution for legal text simplification, evaluating their true capabilities requires a multifaceted approach that goes beyond surface-level metrics. This paper introduces a comprehensive dual-aspect evaluation framework to address this need. First, we establish a performance benchmark for four state-of-the-art large language models (GPT-4o, Claude 3 Opus, Gemini 1.5 Pro, and Grok-1) across three key dimensions: Accuracy, Readability, and Consistency. Second, to understand the \"why\" behind these performance scores, we conduct a large-scale error analysis on a curated dataset of 60 complex Vietnamese legal articles, using a novel, expert-validated error typology. Our results reveal a crucial trade-off: models like Grok-1 excel in Readability and Consistency but compromise on fine-grained legal Accuracy, while models like Claude 3 Opus achieve high Accuracy scores that mask a significant number of subtle but critical reasoning errors. The error analysis pinpoints \\textit{Incorrect Example} and \\textit{Misinterpretation} as the most prevalent failures, confirming that the primary challenge for current LLMs is not summarization but controlled, accurate legal reasoning. By integrating a quantitative benchmark with a qualitative deep dive, our work provides a holistic and actionable assessment of LLMs for legal applications.",
+          "primary_category": "cs.CL",
+          "published": "2026-04-17T17:28:23+00:00",
+          "ingested": false
+        },
+        {
+          "arxiv_id": "2604.16262",
+          "title": "SwanNLP at SemEval-2026 Task 5: An LLM-based Framework for Plausibility Scoring in Narrative Word Sense Disambiguation",
+          "authors": [
+            "Deshan Sumanathilaka",
+            "Nicholas Micallef",
+            "Julian Hough",
+            "Saman Jayasinghe"
+          ],
+          "summary": "Recent advances in language models have substantially improved Natural Language Understanding (NLU). Although widely used benchmarks suggest that Large Language Models (LLMs) can effectively disambiguate, their practical applicability in real-world narrative contexts remains underexplored. SemEval-2026 Task 5 addresses this gap by introducing a task that predicts the human-perceived plausibility of a word sense within a short story. In this work, we propose an LLM-based framework for plausibility scoring of homonymous word senses in narrative texts using a structured reasoning mechanism. We examine the impact of fine-tuning low-parameter LLMs with diverse reasoning strategies, alongside dynamic few-shot prompting for large-parameter models, on accurate sense identification and plausibility estimation. Our results show that commercial large-parameter LLMs with dynamic few-shot prompting closely replicate human-like plausibility judgments. Furthermore, model ensembling slightly improves performance, better simulating the agreement patterns of five human annotators compared to single-model predictions",
+          "primary_category": "cs.CL",
+          "published": "2026-04-17T17:18:51+00:00",
+          "ingested": false
+        },
+        {
+          "arxiv_id": "2604.16256",
+          "title": "Do Vision-Language Models Truly Perform Vision Reasoning? A Rigorous Study of the Modality Gap",
+          "authors": [
+            "Yige Xu",
+            "Yongjie Wang",
+            "Zizhuo Wu",
+            "Kaisong Song",
+            "Jun Lin",
+            "Zhiqi Shen"
+          ],
+          "summary": "Reasoning in vision-language models (VLMs) has recently attracted significant attention due to its broad applicability across diverse downstream tasks. However, it remains unclear whether the superior performance of VLMs stems from genuine vision-grounded reasoning or relies predominantly on the reasoning capabilities of their textual backbones. To systematically measure this, we introduce CrossMath, a novel multimodal reasoning benchmark designed for controlled cross-modal comparisons. Specifically, we construct each problem in text-only, image-only, and image+text formats guaranteeing identical task-relevant information, verified by human annotators. This rigorous alignment effectively isolates modality-specific reasoning differences while eliminating confounding factors such as information mismatch. Extensive evaluation of state-of-the-art VLMs reveals a consistent phenomenon: a substantial performance gap between textual and visual reasoning. Notably, VLMs excel with text-only inputs, whereas incorporating visual data (image+text) frequently degrades performance compared to the text-only baseline. These findings indicate that current VLMs conduct reasoning primarily in the textual space, with limited genuine reliance on visual evidence. To mitigate this limitation, we curate a CrossMath training set for VLM fine-tuning. Empirical evaluations demonstrate that fine-tuning on this training set significantly boosts reasoning performance across all individual and joint modalities, while yielding robust gains on two general visual reasoning tasks. Source code is available at https://github.com/xuyige/CrossMath.",
+          "primary_category": "cs.CV",
+          "published": "2026-04-17T17:15:18+00:00",
+          "ingested": false
+        },
+        {
+          "arxiv_id": "2604.16242",
+          "title": "Detecting and Suppressing Reward Hacking with Gradient Fingerprints",
+          "authors": [
+            "Songtao Wang",
+            "Quang Hieu Pham",
+            "Fangcong Yin",
+            "Xinpeng Wang",
+            "Jocelyn Qiaochu Chen",
+            "Greg Durrett"
+          ],
+          "summary": "Reinforcement learning with verifiable rewards (RLVR) typically optimizes for outcome rewards without imposing constraints on intermediate reasoning. This leaves training susceptible to reward hacking, where models exploit loopholes (e.g., spurious patterns in training data) in the reward function to achieve high scores without solving the intended task. These reward-hacking behaviors are often implicit, as the intermediate chain-of-thought (CoT) may appear plausible on the surface, limiting the effectiveness of purely text-based monitoring. We propose Gradient Fingerprint (GRIFT), a method for detecting reward hacking using models' internal computations. Given a prompt and a model-generated CoT, GRIFT computes gradients of the CoT conditioned on the prompt and compresses them into a compact representation, which is then used to assess whether the CoT reflects reward hacking behavior. Across verifiable reasoning benchmarks spanning math, code, and logical reasoning, GRIFT substantially outperforms strong baselines, including CoT Monitor and TRACE, achieving over 25% relative improvement in detecting reward hacking behavior. Moreover, integrating GRIFT into the rejection fine-tuning pipeline for reasoning tasks reduces reward hacking and improves performance on the true task objective. Our results highlight a promising direction of leveraging gradient level representations for assessing the quality of CoT reasoning traces. Our code is available at: https://github.com/songtao-x/reward_hack.",
+          "primary_category": "cs.LG",
+          "published": "2026-04-17T17:01:24+00:00",
+          "ingested": false
+        },
+        {
+          "arxiv_id": "2604.16241",
+          "title": "BAGEL: Benchmarking Animal Knowledge Expertise in Language Models",
+          "authors": [
+            "Jiacheng Shen",
+            "Masato Hagiwara",
+            "Milad Alizadeh",
+            "Ellen Gilsenan-McMahon",
+            "Marius Miron",
+            "David Robinson"
+          ],
+          "summary": "Large language models have shown strong performance on broad-domain knowledge and reasoning benchmarks, but it remains unclear how well language models handle specialized animal-related knowledge under a unified closed-book evaluation protocol. We introduce BAGEL, a benchmark for evaluating animal knowledge expertise in language models. BAGEL is constructed from diverse scientific and reference sources, including bioRxiv, Global Biotic Interactions, Xeno-canto, and Wikipedia, using a combination of curated examples and automatically generated closed-book question-answer pairs. The benchmark covers multiple aspects of animal knowledge, including taxonomy, morphology, habitat, behavior, vocalization, geographic distribution, and species interactions. By focusing on closed-book evaluation, BAGEL measures animal-related knowledge of models without external retrieval at inference time. BAGEL further supports fine-grained analysis across source domains, taxonomic groups, and knowledge categories, enabling a more precise characterization of model strengths and systematic failure modes. Our benchmark provides a new testbed for studying domain-specific knowledge generalization in language models and for improving their reliability in biodiversity-related applications.",
+          "primary_category": "cs.CL",
+          "published": "2026-04-17T17:00:37+00:00",
+          "ingested": false
+        },
+        {
+          "arxiv_id": "2604.16235",
+          "title": "Optimizing Korean-Centric LLMs via Token Pruning",
+          "authors": [
+            "Hoyeol Kim",
+            "Hyeonwoo Kim"
+          ],
+          "summary": "This paper presents a systematic benchmark of state-of-the-art multilingual large language models (LLMs) adapted via token pruning - a compression technique that eliminates tokens and embedding parameters corresponding to languages irrelevant to the target application. Focusing on Korean-centric natural language processing (NLP) tasks, we evaluate architectures including Qwen3, Gemma-3, Llama-3, and Aya across three vocabulary configurations: Original, English-Korean (EnKo), and English-Korean-Chinese (EnKoZh). Performance is assessed using established benchmarks for general aptitude, cultural literacy, instruction following, and machine translation. Our findings indicate that token pruning significantly improves generation stability by eliminating language confusion, and in the case of machine translation, frequently enhances performance on Korean-specific tasks. While instruction-following capabilities display architecture-dependent variance linked to latent cross-lingual representations, the significant reduction in vocabulary size validates token pruning as a highly effective optimization strategy for memory-constrained, domain-specific deployments, despite modest gains in inference latency.",
+          "primary_category": "cs.CL",
+          "published": "2026-04-17T16:53:14+00:00",
+          "ingested": false
+        },
+        {
+          "arxiv_id": "2604.16217",
+          "title": "Beyond Surface Statistics: Robust Conformal Prediction for LLMs via Internal Representations",
+          "authors": [
+            "Yanli Wang",
+            "Peng Kuang",
+            "Xiaoyu Han",
+            "Kaidi Xu",
+            "Haohan Wang"
+          ],
+          "summary": "Large language models are increasingly deployed in settings where reliability matters, yet output-level uncertainty signals such as token probabilities, entropy, and self-consistency can become brittle under calibration--deployment mismatch. Conformal prediction provides finite-sample validity under exchangeability, but its practical usefulness depends on the quality of the nonconformity score. We propose a conformal framework for LLM question answering that uses internal representations rather than output-facing statistics: specifically, we introduce Layer-Wise Information (LI) scores, which measure how conditioning on the input reshapes predictive entropy across model depth, and use them as nonconformity scores within a standard split conformal pipeline. Across closed-ended and open-domain QA benchmarks, with the clearest gains under cross-domain shift, our method achieves a better validity--efficiency trade-off than strong text-level baselines while maintaining competitive in-domain reliability at the same nominal risk level. These results suggest that internal representations can provide more informative conformal scores when surface-level uncertainty is unstable under distribution shift.",
+          "primary_category": "cs.CL",
+          "published": "2026-04-17T16:28:31+00:00",
+          "ingested": false
+        },
+        {
+          "arxiv_id": "2604.16171",
+          "title": "JumpLoRA: Sparse Adapters for Continual Learning in Large Language Models",
+          "authors": [
+            "Alexandra Dragomir",
+            "Ioana Pintilie",
+            "Antonio Barbalau",
+            "Marius Dragoi",
+            "Florin Brad",
+            "Cristian Daniel Paduraru"
+          ],
+          "summary": "Adapter-based methods have become a cost-effective approach to continual learning (CL) for Large Language Models (LLMs), by sequentially learning a low-rank update matrix for each task. To mitigate catastrophic forgetting, state-of-the-art approaches impose constraints on new adapters with respect to the previous ones, by targeting either subspace or coordinate-wise interference. In this paper, we propose JumpLoRA, a novel framework to adaptively induce sparsity in the Low-Rank Adaptation (LoRA) blocks through the use of JumpReLU gating. The method achieves dynamic parameter isolation, which helps prevent task interference. We demonstrate that our method is highly modular and compatible with LoRA-based CL approaches. Specifically, it significantly boosts the performance of IncLoRA and outperforms the leading state-of-the-art CL method, ELLA.",
+          "primary_category": "cs.LG",
+          "published": "2026-04-17T15:38:37+00:00",
+          "ingested": false
+        },
+        {
+          "arxiv_id": "2604.16158",
+          "title": "AtManRL: Towards Faithful Reasoning via Differentiable Attention Saliency",
+          "authors": [
+            "Max Henning Höth",
+            "Kristian Kersting",
+            "Björn Deiseroth",
+            "Letitia Parcalabescu"
+          ],
+          "summary": "Large language models (LLMs) increasingly rely on chain-of-thought (CoT) reasoning to solve complex tasks. Yet ensuring that the reasoning trace both contributes to and faithfully reflects the processes underlying the model's final answer, rather than merely accompanying it, remains challenging. We introduce AtManRL, a method that leverages differentiable attention manipulation to learn more faithful reasoning through reinforcement learning. By training an additive attention mask that identifies tokens in the CoT crucial for producing correct answers, we derive a saliency reward signal that encourages the model to generate reasoning traces that genuinely influence its final predictions. We integrate this saliency reward with outcome-based rewards within the GRPO framework to jointly optimize for correctness and interpretability. Experiments on GSM8K and MMLU with Llama-3.2-3B-Instruct demonstrate that our approach can identify influential reasoning tokens and enable training more transparent reasoning models.",
+          "primary_category": "cs.CL",
+          "published": "2026-04-17T15:27:35+00:00",
+          "ingested": false
+        }
+      ]
+    },
+    {
+      "code": "cs.CV",
+      "label": "Vision",
+      "papers": [
+        {
+          "arxiv_id": "2604.16299",
+          "title": "Repurposing 3D Generative Model for Autoregressive Layout Generation",
+          "authors": [
+            "Haoran Feng",
+            "Yifan Niu",
+            "Zehuan Huang",
+            "Yang-Tian Sun",
+            "Chunchao Guo",
+            "Yuxin Peng"
+          ],
+          "summary": "We introduce LaviGen, a framework that repurposes 3D generative models for 3D layout generation. Unlike previous methods that infer object layouts from textual descriptions, LaviGen operates directly in the native 3D space, formulating layout generation as an autoregressive process that explicitly models geometric relations and physical constraints among objects, producing coherent and physically plausible 3D scenes. To further enhance this process, we propose an adapted 3D diffusion model that integrates scene, object, and instruction information and employs a dual-guidance self-rollout distillation mechanism to improve efficiency and spatial accuracy. Extensive experiments on the LayoutVLM benchmark show LaviGen achieves superior 3D layout generation performance, with 19% higher physical plausibility than the state of the art and 65% faster computation. Our code is publicly available at https://github.com/fenghora/LaviGen.",
+          "primary_category": "cs.CV",
+          "published": "2026-04-17T17:59:50+00:00",
+          "ingested": false
+        },
+        {
+          "arxiv_id": "2604.16298",
+          "title": "FineCog-Nav: Integrating Fine-grained Cognitive Modules for Zero-shot Multimodal UAV Navigation",
+          "authors": [
+            "Dian Shao",
+            "Zhengzheng Xu",
+            "Peiyang Wang",
+            "Like Liu",
+            "Yule Wang",
+            "Jieqi Shi"
+          ],
+          "summary": "UAV vision-language navigation (VLN) requires an agent to navigate complex 3D environments from an egocentric perspective while following ambiguous multi-step instructions over long horizons. Existing zero-shot methods remain limited, as they often rely on large base models, generic prompts, and loosely coordinated modules. In this work, we propose FineCog-Nav, a top-down framework inspired by human cognition that organizes navigation into fine-grained modules for language processing, perception, attention, memory, imagination, reasoning, and decision-making. Each module is driven by a moderate-sized foundation model with role-specific prompts and structured input-output protocols, enabling effective collaboration and improved interpretability. To support fine-grained evaluation, we construct AerialVLN-Fine, a curated benchmark of 300 trajectories derived from AerialVLN, with sentence-level instruction-trajectory alignment and refined instructions containing explicit visual endpoints and landmark references. Experiments show that FineCog-Nav consistently outperforms zero-shot baselines in instruction adherence, long-horizon planning, and generalization to unseen environments. These results suggest the effectiveness of fine-grained cognitive modularization for zero-shot aerial navigation. Project page: https://smartdianlab.github.io/projects-FineCogNav.",
+          "primary_category": "cs.CV",
+          "published": "2026-04-17T17:59:48+00:00",
+          "ingested": false
+        },
+        {
+          "arxiv_id": "2604.16284",
+          "title": "Enhancing Hazy Wildlife Imagery: AnimalHaze3k and IncepDehazeGan",
+          "authors": [
+            "Shivarth Rai",
+            "Tejeswar Pokuri"
+          ],
+          "summary": "Atmospheric haze significantly degrades wildlife imagery, impeding computer vision applications critical for conservation, such as animal detection, tracking, and behavior analysis. To address this challenge, we introduce AnimalHaze3k a synthetic dataset comprising of 3,477 hazy images generated from 1,159 clear wildlife photographs through a physics-based pipeline. Our novel IncepDehazeGan architecture combines inception blocks with residual skip connections in a GAN framework, achieving state-of-the-art performance (SSIM: 0.8914, PSNR: 20.54, and LPIPS: 0.1104), delivering 6.27% higher SSIM and 10.2% better PSNR than competing approaches. When applied to downstream detection tasks, dehazed images improved YOLOv11 detection mAP by 112% and IoU by 67%. These advances can provide ecologists with reliable tools for population monitoring and surveillance in challenging environmental conditions, demonstrating significant potential for enhancing wildlife conservation efforts through robust visual analytics.",
+          "primary_category": "cs.CV",
+          "published": "2026-04-17T17:46:32+00:00",
+          "ingested": false
+        },
+        {
+          "arxiv_id": "2604.16272",
+          "title": "VEFX-Bench: A Holistic Benchmark for Generic Video Editing and Visual Effects",
+          "authors": [
+            "Xiangbo Gao",
+            "Sicong Jiang",
+            "Bangya Liu",
+            "Xinghao Chen",
+            "Minglai Yang",
+            "Siyuan Yang"
+          ],
+          "summary": "As AI-assisted video creation becomes increasingly practical, instruction-guided video editing has become essential for refining generated or captured footage to meet professional requirements. Yet the field still lacks both a large-scale human-annotated dataset with complete editing examples and a standardized evaluator for comparing editing systems. Existing resources are limited by small scale, missing edited outputs, or the absence of human quality labels, while current evaluation often relies on expensive manual inspection or generic vision-language model judges that are not specialized for editing quality. We introduce VEFX-Dataset, a human-annotated dataset containing 5,049 video editing examples across 9 major editing categories and 32 subcategories, each labeled along three decoupled dimensions: Instruction Following, Rendering Quality, and Edit Exclusivity. Building on VEFX-Dataset, we propose VEFX-Reward, a reward model designed specifically for video editing quality assessment. VEFX-Reward jointly processes the source video, the editing instruction, and the edited video, and predicts per-dimension quality scores via ordinal regression. We further release VEFX-Bench, a benchmark of 300 curated video-prompt pairs for standardized comparison of editing systems. Experiments show that VEFX-Reward aligns more strongly with human judgments than generic VLM judges and prior reward models on both standard IQA/VQA metrics and group-wise preference evaluation. Using VEFX-Reward as an evaluator, we benchmark representative commercial and open-source video editing systems, revealing a persistent gap between visual plausibility, instruction following, and edit locality in current models.",
+          "primary_category": "cs.CV",
+          "published": "2026-04-17T17:28:24+00:00",
+          "ingested": false
+        },
+        {
+          "arxiv_id": "2604.16266",
+          "title": "Hero-Mamba: Mamba-based Dual Domain Learning for Underwater Image Enhancement",
+          "authors": [
+            "Tejeswar Pokuri",
+            "Shivarth Rai"
+          ],
+          "summary": "Underwater images often suffer from severe degradation, such as color distortion, low contrast, and blurred details, due to light absorption and scattering in water. While learning-based methods like CNNs and Transformers have shown promise, they face critical limitations: CNNs struggle to model the long-range dependencies needed for non-uniform degradation, and Transformers incur quadratic computational complexity, making them inefficient for high-resolution images. To address these challenges, we propose Hero-Mamba, a novel Mamba-based network that achieves efficient dual-domain learning for underwater image enhancement. Our approach uniquely processes information from both the spatial domain (RGB image) and the spectral domain (FFT components) in parallel. This dual-domain input allows the network to decouple degradation factors, separating color/brightness information from texture/noise. The core of our network utilizes Mamba-based SS2D blocks to capture global receptive fields and long-range dependencies with linear complexity, overcoming the limitations of both CNNs and Transformers. Furthermore, we introduce a ColorFusion block, guided by a background light prior, to restore color information with high fidelity. Extensive experiments on the LSUI and UIEB benchmark datasets demonstrate that Hero-Mamba outperforms state-of-the-art methods. Notably, our model achieves a PSNR of 25.802 and an SSIM of 0.913 on LSUI, validating its superior performance and generalization capabilities.",
+          "primary_category": "cs.CV",
+          "published": "2026-04-17T17:24:11+00:00",
+          "ingested": false
+        },
+        {
+          "arxiv_id": "2604.16264",
+          "title": "Information Router for Mitigating Modality Dominance in Vision-Language Models",
+          "authors": [
+            "Seulgi Kim",
+            "Mohit Prabhushankar",
+            "Ghassan AlRegib"
+          ],
+          "summary": "Vision Language models (VLMs) have demonstrated strong performance across a wide range of benchmarks, yet they often suffer from modality dominance, where predictions rely disproportionately on a single modality. Prior approaches primarily address this issue by steering model's attention allocation, implicitly assuming that all modalities provide sufficient information. However, attention only determines where the model focuses, and cannot enrich information that is missing or ambiguous. In the real world, input modalities often differ in information density and their signal-to-noise ratios. In such cases, simply adjusting model's attention does not resolve the underlying lack of information. In this paper, we propose \\textsc{MoIR}: \\textit{Multi-modal Information Router}, an information-level fusion method that explicitly reduces information disparity prior to fusion. \\textsc{MoIR} identifies less informative tokens and routes complementary information from a stronger modality, constructing information-dense token representations before they are processed by a large language model. By modifying information availability, \\textsc{MoIR} enables reliable shifts in modality dominance, even when one modality is degraded. We evaluate \\textsc{MoIR} on three widely used multi-modal benchmarks across multiple model backbones. Experimental results show that \\textsc{MoIR} consistently demonstrates more balanced modality contribution, and improves robustness and downstream performance, particularly even under modality degradation. These findings demonstrate that explicitly modifying cross-modal information is an effective and complementary strategy for mitigating modality dominance in multi-modal reasoning models.",
+          "primary_category": "cs.CV",
+          "published": "2026-04-17T17:20:42+00:00",
+          "ingested": false
+        },
+        {
+          "arxiv_id": "2604.16256",
+          "title": "Do Vision-Language Models Truly Perform Vision Reasoning? A Rigorous Study of the Modality Gap",
+          "authors": [
+            "Yige Xu",
+            "Yongjie Wang",
+            "Zizhuo Wu",
+            "Kaisong Song",
+            "Jun Lin",
+            "Zhiqi Shen"
+          ],
+          "summary": "Reasoning in vision-language models (VLMs) has recently attracted significant attention due to its broad applicability across diverse downstream tasks. However, it remains unclear whether the superior performance of VLMs stems from genuine vision-grounded reasoning or relies predominantly on the reasoning capabilities of their textual backbones. To systematically measure this, we introduce CrossMath, a novel multimodal reasoning benchmark designed for controlled cross-modal comparisons. Specifically, we construct each problem in text-only, image-only, and image+text formats guaranteeing identical task-relevant information, verified by human annotators. This rigorous alignment effectively isolates modality-specific reasoning differences while eliminating confounding factors such as information mismatch. Extensive evaluation of state-of-the-art VLMs reveals a consistent phenomenon: a substantial performance gap between textual and visual reasoning. Notably, VLMs excel with text-only inputs, whereas incorporating visual data (image+text) frequently degrades performance compared to the text-only baseline. These findings indicate that current VLMs conduct reasoning primarily in the textual space, with limited genuine reliance on visual evidence. To mitigate this limitation, we curate a CrossMath training set for VLM fine-tuning. Empirical evaluations demonstrate that fine-tuning on this training set significantly boosts reasoning performance across all individual and joint modalities, while yielding robust gains on two general visual reasoning tasks. Source code is available at https://github.com/xuyige/CrossMath.",
+          "primary_category": "cs.CV",
+          "published": "2026-04-17T17:15:18+00:00",
+          "ingested": false
+        },
+        {
+          "arxiv_id": "2604.16248",
+          "title": "Where Do Vision-Language Models Fail? World Scale Analysis for Image Geolocalization",
+          "authors": [
+            "Siddhant Bharadwaj",
+            "Ashish Vashist",
+            "Fahimul Aleem",
+            "Shruti Vyas"
+          ],
+          "summary": "Image geolocalization has traditionally been addressed through retrieval-based place recognition or geometry-based visual localization pipelines. Recent advances in Vision-Language Models (VLMs) have demonstrated strong zero-shot reasoning capabilities across multimodal tasks, yet their performance in geographic inference remains underexplored. In this work, we present a systematic evaluation of multiple state-of-the-art VLMs for country-level image geolocalization using ground-view imagery only. Instead of relying on image matching, GPS metadata, or task-specific training, we evaluate prompt-based country prediction in a zero-shot setting. The selected models are tested on three geographically diverse datasets to assess their robustness and generalization ability. Our results reveal substantial variation across models, highlighting the potential of semantic reasoning for coarse geolocalization and the limitations of current VLMs in capturing fine-grained geographic cues. This study provides the first focused comparison of modern VLMs for country-level geolocalization and establishes a foundation for future research at the intersection of multimodal reasoning and geographic understanding.",
+          "primary_category": "cs.CV",
+          "published": "2026-04-17T17:09:14+00:00",
+          "ingested": false
+        },
+        {
+          "arxiv_id": "2604.16243",
+          "title": "Find, Fix, Reason: Context Repair for Video Reasoning",
+          "authors": [
+            "Haojian Huang",
+            "Chuanyu Qin",
+            "Yinchuan Li",
+            "Yingcong Chen"
+          ],
+          "summary": "Reinforcement learning has advanced video reasoning in large multi-modal models, yet dominant pipelines either rely on on-policy self-exploration, which plateaus at the model's knowledge boundary, or hybrid replay that mixes policies and demands careful regularization. Dynamic context methods zoom into focused evidence but often require curated pretraining and two-stage tuning, and their context remains bounded by a small model's capability. In contrast, larger models excel at instruction following and multi-modal understanding, can supply richer context to smaller models, and rapidly zoom in on target regions via simple tools. Building on this capability, we introduce an observation-level intervention: a frozen, tool-integrated teacher identifies the missing spatiotemporal dependency and provides a minimal evidence patch (e.g., timestamps, regions etc.) from the original video while the question remains unchanged. The student answers again with the added context, and training updates with a chosen-rollout scheme integrated into Group Relative Policy Optimization (GRPO). We further propose a Robust Improvement Reward (RIR) that aligns optimization with two goals: outcome validity through correct answers and dependency alignment through rationales that reflect the cited evidence. Advantages are group-normalized across the batch, preserving on-policy exploration while directing it along causally meaningful directions with minimal changes to the training stack. Experiments on various related benchmarks show consistent accuracy gains and strong generalization. Web page and source code will be available at https://github.com/JethroJames/FFR.git.",
+          "primary_category": "cs.CV",
+          "published": "2026-04-17T17:04:19+00:00",
+          "ingested": false
+        },
+        {
+          "arxiv_id": "2604.16240",
+          "title": "CollideNet: Hierarchical Multi-scale Video Representation Learning with Disentanglement for Time-To-Collision Forecasting",
+          "authors": [
+            "Nishq Poorav Desai",
+            "Ali Etemad",
+            "Michael Greenspan"
+          ],
+          "summary": "Time-to-Collision (TTC) forecasting is a critical task in collision prevention, requiring precise temporal prediction and comprehending both local and global patterns encapsulated in a video, both spatially and temporally. To address the multi-scale nature of video, we introduce a novel spatiotemporal hierarchical transformer-based architecture called CollideNet, specifically catered for effective TTC forecasting. In the spatial stream, CollideNet aggregates information for each video frame simultaneously at multiple resolutions. In the temporal stream, along with multi-scale feature encoding, CollideNet also disentangles the non-stationarity, trend, and seasonality components. Our method achieves state-of-the-art performance in comparison to prior works on three commonly used public datasets, setting a new state-of-the-art by a considerable margin. We conduct cross-dataset evaluations to analyze the generalization capabilities of our method, and visualize the effects of disentanglement of the trend and seasonality components of the video data. We release our code at https://github.com/DeSinister/CollideNet/.",
+          "primary_category": "cs.CV",
+          "published": "2026-04-17T17:00:03+00:00",
+          "ingested": false
+        },
+        {
+          "arxiv_id": "2604.16234",
+          "title": "A Two-Stage, Object-Centric Deep Learning Framework for Robust Exam Cheating Detection",
+          "authors": [
+            "Van-Truong Le",
+            "Le-Khanh Nguyen",
+            "Trong-Doanh Nguyen"
+          ],
+          "summary": "Academic integrity continues to face the persistent challenge of examination cheating. Traditional invigilation relies on human observation, which is inefficient, costly, and prone to errors at scale. Although some existing AI-powered monitoring systems have been deployed and trusted, many lack transparency or require multi-layered architectures to achieve the desired performance. To overcome these challenges, we propose an improvement over a simple two-stage framework for exam cheating detection that integrates object detection and behavioral analysis using well-known technologies. First, the state-of-the-art YOLOv8n model is used to localize students in exam-room images. Each detected region is cropped and preprocessed, then classified by a fine-tuned RexNet-150 model as either normal or cheating behavior. The system is trained on a dataset compiled from 10 independent sources with a total of 273,897 samples, achieving 0.95 accuracy, 0.94 recall, 0.96 precision, and 0.95 F1-score - a 13\\% increase over a baseline accuracy of 0.82 in video-based cheating detection. In addition, with an average inference time of 13.9 ms per sample, the proposed approach demonstrates robustness and scalability for deployment in large-scale environments. Beyond the technical contribution, the AI-assisted monitoring system also addresses ethical concerns by ensuring that final outcomes are delivered privately to individual students after the examination, for example, via personal email. This prevents public exposure or shaming and offers students an opportunity to reflect on their behavior. For further improvement, it is possible to incorporate additional factors, such as audio data and consecutive frames, to achieve greater accuracy. This study provides a foundation for developing real-time, scalable, ethical, and open-source solutions.",
+          "primary_category": "cs.CV",
+          "published": "2026-04-17T16:53:08+00:00",
+          "ingested": false
+        },
+        {
+          "arxiv_id": "2604.16231",
+          "title": "Dental Panoramic Radiograph Analysis Using YOLO26 From Tooth Detection to Disease Diagnosis",
+          "authors": [
+            "Khawaja Azfar Asif",
+            "Rafaqat Alam Khan"
+          ],
+          "summary": "Panoramic radiography is a fundamental diagnostic tool in dentistry, offering a comprehensive view of the entire dentition with minimal radiation exposure. However, manual interpretation is time-consuming and prone to errors, especially in high-volume clinical settings. This creates a pressing need for efficient automated solutions. This study presents the first application of YOLOv26 for automated tooth detection, FDI-based numbering, and dental disease segmentation in panoramic radiographs. The DENTEX dataset was preprocessed using Roboflow for format conversion and augmentation, yielding 1,082 images for tooth enumeration and 1,040 images for disease segmentation across four pathology classes. Five YOLOv26-seg variants were trained on Google Colab using transfer learning at a resolution of 800x800. Results demonstrate that the YOLOv26m-seg model achieved the best performance for tooth enumeration, with a precision of 0.976, recall of 0.970, and box mAP50 of 0.976. It outperformed the YOLOv8x baseline by 4.9% in precision and 3.3% in mAP50, while also enabling high-quality mask-level segmentation (mask mAP50 = 0.970). For disease segmentation, the YOLOv26l-seg model attained a box mAP50 of 0.591 and a mask mAP50 of 0.547. Impacted teeth showed the highest per-class average precision (0.943), indicating that visual distinctiveness influences detection performance more than annotation quantity. Overall, these findings demonstrate that YOLOv26-based models offer a robust and accurate framework for automated dental image analysis, with strong potential to enhance diagnostic efficiency and consistency in clinical practice.",
+          "primary_category": "cs.CV",
+          "published": "2026-04-17T16:46:19+00:00",
+          "ingested": false
+        }
+      ]
+    },
+    {
+      "code": "cs.LG",
+      "label": "ML",
+      "papers": [
+        {
+          "arxiv_id": "2604.16282",
+          "title": "Geometric regularization of autoencoders via observed stochastic dynamics",
+          "authors": [
+            "Sean Hill",
+            "Felix X. -F. Ye"
+          ],
+          "summary": "Stochastic dynamical systems with slow or metastable behavior evolve, on long time scales, on an unknown low-dimensional manifold in high-dimensional ambient space. Building a reduced simulator from short-burst ambient ensembles is a long-standing problem: local-chart methods like ATLAS suffer from exponential landmark scaling and per-step reprojection, while autoencoder alternatives leave tangent-bundle geometry poorly constrained, and the errors propagate into the learned drift and diffusion. We observe that the ambient covariance~$Λ$ already encodes coordinate-invariant tangent-space information, its range spanning the tangent bundle. Using this, we construct a tangent-bundle penalty and an inverse-consistency penalty for a three-stage pipeline (chart learning, latent drift, latent diffusion) that learns a single nonlinear chart and the latent SDE. The penalties induce a function-space metric, the $ρ$-metric, strictly weaker than the Sobolev $H^1$ norm yet achieving the same chart-quality generalization rate up to logarithmic factors. For the drift, we derive an encoder-pullback target via Itô's formula on the learned encoder and prove a bias decomposition showing the standard decoder-side formula carries systematic error for any imperfect chart. Under a $W^{2,\\infty}$ chart-convergence assumption, chart-level error propagates controllably to weak convergence of the ambient dynamics and to convergence of radial mean first-passage times. Experiments on four surfaces embedded in up to $201$ ambient dimensions reduce radial MFPT error by $50$--$70\\%$ under rotation dynamics and achieve the lowest inter-well MFPT error on most surface--transition pairs under metastable Müller--Brown Langevin dynamics, while reducing end-to-end ambient coefficient errors by up to an order of magnitude relative to an unregularized autoencoder.",
+          "primary_category": "cs.LG",
+          "published": "2026-04-17T17:44:02+00:00",
+          "ingested": false
+        },
+        {
+          "arxiv_id": "2604.16279",
+          "title": "Evaluating the Progression of Large Language Model Capabilities for Small-Molecule Drug Design",
+          "authors": [
+            "Shriram Chennakesavalu",
+            "Kirill Shmilovich",
+            "Hayley Weir",
+            "Colin Grambow",
+            "John Bradshaw",
+            "Patricia Suriana"
+          ],
+          "summary": "Large Language Models (LLMs) have the potential to accelerate small molecule drug design due to their ability to reason about information from diverse sources and formats. However, their practical utility remains unclear due to the lack of benchmarks that reflect real-world scenarios. In this work, we introduce a suite of chemically-grounded tasks spanning molecular property prediction, molecular representation transformations, and molecular design. Importantly, we formulate these tasks as reinforcement learning (RL) environments, enabling a unified approach for evaluation and post-training. Across three model families, we find that frontier models are increasingly proficient at chemical tasks, but that there is significant room for improvement, especially in experimental settings with low data. Critically, we show that RL-based post-training can substantially improve performance. A smaller model post-trained on our environments becomes competitive with state-of-the-art frontier models, despite a significantly weaker base model. This suggests a practical route toward employing LLMs in drug discovery; by combining carefully-designed evaluation tasks with targeted post-training, we can both elucidate and close critical capability gaps.",
+          "primary_category": "cs.LG",
+          "published": "2026-04-17T17:40:26+00:00",
+          "ingested": false
+        },
+        {
+          "arxiv_id": "2604.16278",
+          "title": "Learning to Reason with Insight for Informal Theorem Proving",
+          "authors": [
+            "Yunhe Li",
+            "Hao Shi",
+            "Bowen Deng",
+            "Wei Wang",
+            "Mengzhe Ruan",
+            "Hanxu Hou"
+          ],
+          "summary": "Although most of the automated theorem-proving approaches depend on formal proof systems, informal theorem proving can align better with large language models' (LLMs) strength in natural language processing. In this work, we identify a primary bottleneck in informal theorem proving as a lack of insight, namely the difficulty of recognizing the core techniques required to solve complex problems. To address this, we propose a novel framework designed to cultivate this essential reasoning skill and enable LLMs to perform insightful reasoning. We propose $\\mathtt{DeepInsightTheorem}$, a hierarchical dataset that structures informal proofs by explicitly extracting core techniques and proof sketches alongside the final proof. To fully exploit this dataset, we design a Progressive Multi-Stage SFT strategy that mimics the human learning process, guiding the model from basic proof writing to insightful thinking. Our experiments on challenging mathematical benchmarks demonstrate that this insight-aware generation strategy significantly outperforms baselines. These results demonstrate that teaching models to identify and apply core techniques can substantially improve their mathematical reasoning.",
+          "primary_category": "cs.AI",
+          "published": "2026-04-17T17:36:21+00:00",
+          "ingested": false
+        },
+        {
+          "arxiv_id": "2604.16265",
+          "title": "FL-MHSM: Spatially-adaptive Fusion and Ensemble Learning for Flood-Landslide Multi-Hazard Susceptibility Mapping at Regional Scale",
+          "authors": [
+            "Aswathi Mundayatt",
+            "Jaya Sreevalsan-Nair"
+          ],
+          "summary": "Existing multi-hazard susceptibility mapping (MHSM) studies often rely on spatially uniform models, treat hazards independently, and provide limited representation of cross-hazard dependence and uncertainty. To address these limitations, this study proposes a deep learning (DL) workflow for joint flood-landslide multi-hazard susceptibility mapping (FL-MHSM) that combines two-level spatial partitioning, probabilistic Early Fusion (EF), a tree-based Late Fusion (LF) baseline, and a soft-gating Mixture of Experts (MoE) model, with MoE serving as final predictive model. The proposed design preserves spatial heterogeneity through zonal partitions and enables data-parallel large-area prediction using overlapping lattice grids. In Kerala, EF remained competitive with LF, improving flood recall from 0.816 to 0.840 and reducing Brier score from 0.092 to 0.086, while MoE provided strongest performance for flood susceptibility, achieving an AUC-ROC of 0.905, recall of 0.930, and F1-score of 0.722. In Nepal, EF similarly improved flood recall from 0.820 to 0.858 and reduced Brier score from 0.057 to 0.049 relative to LF, while MoE outperformed both EF and LF for landslide susceptibility, achieving an AUC-ROC of 0.914, recall of 0.901, and F1-score of 0.559. GeoDetector analysis of MoE outputs further showed that dominant factors varied more across zones in Kerala, where susceptibility was shaped by different combinations of topographic, land-cover, and drainage-related controls, while Nepal showed a more consistent influence of topographic and glacier-related factors across zones. These findings show that EF and LF provide complementary predictive behavior, and that their spatially adaptive integration through MoE yields robust overall predictive performance for FL-MHSM while supporting interpretable characterization of multi-hazard susceptibility in spatially heterogeneous landscapes.",
+          "primary_category": "cs.LG",
+          "published": "2026-04-17T17:23:55+00:00",
+          "ingested": false
+        },
+        {
+          "arxiv_id": "2604.16264",
+          "title": "Information Router for Mitigating Modality Dominance in Vision-Language Models",
+          "authors": [
+            "Seulgi Kim",
+            "Mohit Prabhushankar",
+            "Ghassan AlRegib"
+          ],
+          "summary": "Vision Language models (VLMs) have demonstrated strong performance across a wide range of benchmarks, yet they often suffer from modality dominance, where predictions rely disproportionately on a single modality. Prior approaches primarily address this issue by steering model's attention allocation, implicitly assuming that all modalities provide sufficient information. However, attention only determines where the model focuses, and cannot enrich information that is missing or ambiguous. In the real world, input modalities often differ in information density and their signal-to-noise ratios. In such cases, simply adjusting model's attention does not resolve the underlying lack of information. In this paper, we propose \\textsc{MoIR}: \\textit{Multi-modal Information Router}, an information-level fusion method that explicitly reduces information disparity prior to fusion. \\textsc{MoIR} identifies less informative tokens and routes complementary information from a stronger modality, constructing information-dense token representations before they are processed by a large language model. By modifying information availability, \\textsc{MoIR} enables reliable shifts in modality dominance, even when one modality is degraded. We evaluate \\textsc{MoIR} on three widely used multi-modal benchmarks across multiple model backbones. Experimental results show that \\textsc{MoIR} consistently demonstrates more balanced modality contribution, and improves robustness and downstream performance, particularly even under modality degradation. These findings demonstrate that explicitly modifying cross-modal information is an effective and complementary strategy for mitigating modality dominance in multi-modal reasoning models.",
+          "primary_category": "cs.CV",
+          "published": "2026-04-17T17:20:42+00:00",
+          "ingested": false
+        },
+        {
+          "arxiv_id": "2604.16259",
+          "title": "Beyond Distribution Sharpening: The Importance of Task Rewards",
+          "authors": [
+            "Sarthak Mittal",
+            "Leo Gagnon",
+            "Guillaume Lajoie"
+          ],
+          "summary": "Frontier models have demonstrated exceptional capabilities following the integration of task-reward-based reinforcement learning (RL) into their training pipelines, enabling systems to evolve from pure reasoning models into sophisticated agents. However, debate persists regarding whether RL genuinely instills new skills within a base model or merely sharpens its existing distribution to elicit latent capabilities. To address this dichotomy, we present an explicit comparison between distribution sharpening and task-reward-based learning, utilizing RL as a tool to implement both paradigms. Our analysis reveals the inherent limitations of distribution sharpening, demonstrating from first principles how and why the optima can be unfavorable and the approach fundamentally unstable. Furthermore, our experiments using Llama-3.2-3B-Instruct, Qwen2.5-3B-Instruct and Qwen3-4B-Instruct-2507 on math datasets confirm that sharpening yields limited gains, whereas incorporating task-based reward signal can greatly help achieve robust performance improvements and stable learning.",
+          "primary_category": "cs.LG",
+          "published": "2026-04-17T17:17:55+00:00",
+          "ingested": false
+        },
+        {
+          "arxiv_id": "2604.16247",
+          "title": "Joint-Centric Dual Contrastive Alignment with Structure-Preserving and Information-Balanced Regularization",
+          "authors": [
+            "Habibeh Naderi",
+            "Behrouz Haji Soleimani",
+            "Stan Matwin"
+          ],
+          "summary": "We propose HILBERT (HIerarchical Long-sequence Balanced Embedding with Reciprocal contrastive Training), a cross-attentive multimodal framework for learning document-level audio-text representations from long, segmented sequences in low-resource data settings. HILBERT leverages frozen pre-trained speech and language encoders to extract segment-level features, which are aggregated via cross-modal attention and self-attentive pooling to form modality-specific document representations and a joint cross-attentive embedding. To align modalities while preserving modality-specific structure under severe audio-text dimensional imbalance, we introduce a reciprocal dual contrastive objective that simultaneously aligns audio-to-joint and text-to-joint representations, rather than directly contrasting audio and text alone. Two auxiliary regularizers further stabilize long-sequence fusion: a Centered Kernel Alignment (CKA) loss that preserves structural consistency between each modality and the joint embedding, and a mutual information balancing loss that prevents dominance of a single modality by equalizing information flow from audio and text into the joint space. For downstream prediction, HILBERT employs a Mixture-of-Experts (MoE) classifier over concatenated audio, text, and joint representations to accommodate heterogeneous label regimes. Extensive evaluation across multiple audio-text backbone combinations demonstrates that HILBERT learns semantically meaningful long-sequence representations and achieves superior performance on highly imbalanced multi-class settings.",
+          "primary_category": "cs.LG",
+          "published": "2026-04-17T17:07:35+00:00",
+          "ingested": false
+        },
+        {
+          "arxiv_id": "2604.16242",
+          "title": "Detecting and Suppressing Reward Hacking with Gradient Fingerprints",
+          "authors": [
+            "Songtao Wang",
+            "Quang Hieu Pham",
+            "Fangcong Yin",
+            "Xinpeng Wang",
+            "Jocelyn Qiaochu Chen",
+            "Greg Durrett"
+          ],
+          "summary": "Reinforcement learning with verifiable rewards (RLVR) typically optimizes for outcome rewards without imposing constraints on intermediate reasoning. This leaves training susceptible to reward hacking, where models exploit loopholes (e.g., spurious patterns in training data) in the reward function to achieve high scores without solving the intended task. These reward-hacking behaviors are often implicit, as the intermediate chain-of-thought (CoT) may appear plausible on the surface, limiting the effectiveness of purely text-based monitoring. We propose Gradient Fingerprint (GRIFT), a method for detecting reward hacking using models' internal computations. Given a prompt and a model-generated CoT, GRIFT computes gradients of the CoT conditioned on the prompt and compresses them into a compact representation, which is then used to assess whether the CoT reflects reward hacking behavior. Across verifiable reasoning benchmarks spanning math, code, and logical reasoning, GRIFT substantially outperforms strong baselines, including CoT Monitor and TRACE, achieving over 25% relative improvement in detecting reward hacking behavior. Moreover, integrating GRIFT into the rejection fine-tuning pipeline for reasoning tasks reduces reward hacking and improves performance on the true task objective. Our results highlight a promising direction of leveraging gradient level representations for assessing the quality of CoT reasoning traces. Our code is available at: https://github.com/songtao-x/reward_hack.",
+          "primary_category": "cs.LG",
+          "published": "2026-04-17T17:01:24+00:00",
+          "ingested": false
+        },
+        {
+          "arxiv_id": "2604.16239",
+          "title": "Adaptive multi-fidelity optimization with fast learning rates",
+          "authors": [
+            "Come Fiegel",
+            "Victor Gabillon",
+            "Michal Valko"
+          ],
+          "summary": "In multi-fidelity optimization, biased approximations of varying costs of the target function are available. This paper studies the problem of optimizing a locally smooth function with a limited budget, where the learner has to make a tradeoff between the cost and the bias of these approximations. We first prove lower bounds for the simple regret under different assumptions on the fidelities, based on a cost-to-bias function. We then present the Kometo algorithm which achieves, with additional logarithmic factors, the same rates without any knowledge of the function smoothness and fidelity assumptions, and improves previously proven guarantees. We finally empirically show that our algorithm outperforms previous multi-fidelity optimization methods without the knowledge of problem-dependent parameters.",
+          "primary_category": "stat.ML",
+          "published": "2026-04-17T16:59:07+00:00",
+          "ingested": false
+        },
+        {
+          "arxiv_id": "2604.16238",
+          "title": "Enhancing AI and Dynamical Subseasonal Forecasts with Probabilistic Bias Correction",
+          "authors": [
+            "Hannah Guan",
+            "Soukayna Mouatadid",
+            "Paulo Orenstein",
+            "Judah Cohen",
+            "Haiyu Dong",
+            "Zekun Ni"
+          ],
+          "summary": "Decision-makers rely on weather forecasts to plant crops, manage wildfires, allocate water and energy, and prepare for weather extremes. Today, such forecasts enjoy unprecedented accuracy out to two weeks thanks to steady advances in physics-based dynamical models and data-driven artificial intelligence (AI) models. However, model skill drops precipitously at subseasonal timescales (2 - 6 weeks ahead), due to compounding errors and persistent biases. To counter this degradation, we introduce probabilistic bias correction (PBC), a machine learning framework that substantially reduces systematic error by learning to correct historical probabilistic forecasts. When applied to the leading dynamical and AI models from the European Centre for Medium-Range Weather Forecasts (ECMWF), PBC doubles the subseasonal skill of the AI Forecasting System and improves the skill of the operationally-debiased dynamical model for 91% of pressure, 92% of temperature, and 98% of precipitation targets. We designed PBC for operational deployment, and, in ECMWF's 2025 real-time forecasting competition, its global forecasts placed first for all weather variables and lead times, outperforming the dynamical models from six operational forecasting centers, an international dynamical multi-model ensemble, ECMWF's AI Forecasting System, and the forecasting systems of 34 teams worldwide. These probabilistic skill gains translate into more accurate prediction of extreme events and have the potential to improve agricultural planning, energy management, and disaster preparedness in vulnerable communities.",
+          "primary_category": "cs.LG",
+          "published": "2026-04-17T16:58:06+00:00",
+          "ingested": false
+        },
+        {
+          "arxiv_id": "2604.16232",
+          "title": "Neuro-Symbolic ODE Discovery with Latent Grammar Flow",
+          "authors": [
+            "Karin Yu",
+            "Eleni Chatzi",
+            "Georgios Kissas"
+          ],
+          "summary": "Understanding natural and engineered systems often relies on symbolic formulations, such as differential equations, which provide interpretability and transferability beyond black-box models.\n  We introduce Latent Grammar Flow (LGF), a neuro-symbolic generative framework for discovering ordinary differential equations from data. LGF embeds equations as grammar-based representations into a discrete latent space and forces semantically similar equations to be positioned closer together with a behavioural loss. Then, a discrete flow model guides the sampling process to recursively generate candidate equations that best fit the observed data. Domain knowledge and constraints, such as stability, can be either embedded into the rules or used as conditional predictors.",
+          "primary_category": "cs.LG",
+          "published": "2026-04-17T16:46:23+00:00",
+          "ingested": false
+        },
+        {
+          "arxiv_id": "2604.16220",
+          "title": "OT on the Map: Quantifying Domain Shifts in Geographic Space",
+          "authors": [
+            "Haoran Zhang",
+            "Livia Betti",
+            "Konstantin Klemmer",
+            "Esther Rolf",
+            "David Alvarez-Melis"
+          ],
+          "summary": "In computer vision and machine learning for geographic data, out-of-domain generalization is a pervasive challenge, arising from uneven global data coverage and distribution shifts across geographic regions. Though models are frequently trained in one region and deployed in another, there is no principled method for determining when this cross-region adaptation will be successful. A well-defined notion of distance between distributions can effectively quantify how different a new target domain is compared to the domains used for model training, which in turn could support model training and deployment decisions. In this paper, we propose a strategy for computing distances between geospatial domains that leverages geographic information with Optimal Transport methods (GeoSpOT). In our experiments, GeoSpOT distances emerge as effective predictors of cross-domain transfer difficulty. We further demonstrate that embeddings from pretrained location encoders provide information comparable to image/text embeddings, despite relying solely on longitude-latitude pairs as input. This allows users to get an approximation of out-of-domain performance for geospatial models, even when the exact downstream task is unknown, or no task-specific data is available. Building on these findings, we show that GeoSpOT distances can preemptively guide data selection and enable predictive tools to analyze regions where a model is likely to underperform.",
+          "primary_category": "cs.LG",
+          "published": "2026-04-17T16:33:38+00:00",
+          "ingested": false
+        }
+      ]
+    }
+  ]
+}

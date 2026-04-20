@@ -65,6 +65,38 @@ def bootstrap(
     typer.echo("\nDone. Reader at http://localhost:8000")
 
 
+@app.command()
+def discover(
+    output: Path = typer.Option(
+        Path("docs/discover.json"),
+        "--output",
+        "-o",
+        help="Where to write the discover payload.",
+    ),
+) -> None:
+    """Fetch recent arxiv papers per category for the gallery's Discover view.
+
+    Arxiv's API doesn't support browser CORS, so this runs at build time
+    (locally, or in the Pages workflow) and commits a small JSON the
+    browser loads statically. Ingested papers are marked so the gallery
+    can style them differently.
+    """
+    from clarify.discover import write_discover_json
+
+    ingested = {r["arxiv_id"] for r in cache.list_papers()}
+    out_path = project_root() / output
+    typer.echo(f"Fetching recent papers for {len(_discover_categories())} categories…")
+    payload = write_discover_json(out_path, ingested=ingested)
+    total = sum(len(g["papers"]) for g in payload["groups"])
+    typer.echo(f"Wrote {out_path} — {total} preview cards across "
+               f"{len(payload['groups'])} categories.")
+
+
+def _discover_categories():
+    from clarify.discover import CATEGORIES
+    return CATEGORIES
+
+
 @app.command("build-static")
 def build_static(
     dist: Path = typer.Argument(

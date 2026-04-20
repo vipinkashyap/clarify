@@ -62,6 +62,11 @@ jobs:
       - name: Regenerate coverage snapshot
         run: uv run clarify stats --markdown > docs/coverage.md
 
+      - name: Refresh arxiv Discover snapshot
+        run: uv run clarify discover
+        continue-on-error: true   # arxiv rate-limits happen; don't fail the deploy
+
+
       - name: Build static site
         run: uv run clarify build-static dist
 
